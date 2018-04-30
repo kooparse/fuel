@@ -1,7 +1,11 @@
 extern crate gl;
 extern crate glutin;
 
+mod utils;
+
+use std::str;
 use glutin::GlContext;
+use utils::create_shader_program;
 
 const TITLE: &str = "OpenGL";
 const WINDOW_WIDTH: u32 = 800;
@@ -26,8 +30,10 @@ fn main() {
     // Load all OpenGL function pointers
     gl::load_with(|symbol| gl_window.get_proc_address(symbol) as *const _);
 
-    let mut running = true;
+    let vertices: [f32; 9] = [-0.5, -0.5, 0., 0.5, -0.5, 0., 0., 0.5, 0.];
+    let (shader_program, vao) = create_shader_program(&vertices);
 
+    let mut running = true;
     while running {
         event_loop.poll_events(|event| match event {
             glutin::Event::WindowEvent { event, .. } => match event {
@@ -41,6 +47,11 @@ fn main() {
         unsafe {
             gl::ClearColor(1., 1., 1., 1.);
             gl::Clear(gl::COLOR_BUFFER_BIT);
+
+            // Draw our stuff
+            gl::UseProgram(shader_program);
+            gl::BindVertexArray(vao);
+            gl::DrawArrays(gl::TRIANGLES, 0, 6);
         }
 
         gl_window.swap_buffers().unwrap();
