@@ -1,0 +1,8 @@
+[package]
+name = "opengl-rs"
+version = "0.1.0"
+authors = ["Alexandre Chêne <kooparse@protonmail.com>"]
+
+[dependencies]
+gl = "0.6.0"
+glutin = "0.14.0"
