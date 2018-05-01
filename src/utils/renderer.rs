@@ -18,6 +18,7 @@ const VERTEX_SHADER_SOURCE: &str = r#"
 const FRAGMENT_SHADER_SOURCE: &str = r#"
     #version 330 core
     out vec4 FragColor;
+
     void main() {
         FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
     }
@@ -46,7 +47,10 @@ fn check_shader_compile_error(shader: GLuint) {
     }
 }
 
-pub fn create_shader_program(vertices: &[f32]) -> (GLuint, u32) {
+pub fn create_shader_program(
+    vertices: &[f32],
+    indices: &[i32],
+) -> (GLuint, u32) {
     unsafe {
         // Build and compile vertex shader
         let vertex_shader = gl::CreateShader(gl::VERTEX_SHADER);
@@ -70,18 +74,30 @@ pub fn create_shader_program(vertices: &[f32]) -> (GLuint, u32) {
         gl::DeleteShader(vertex_shader);
         gl::DeleteShader(fragment_shader);
 
-        let (mut vbo, mut vao) = (0, 0);
+
+        let (mut vbo, mut vao, mut ebo) = (0, 0, 0);
         gl::GenVertexArrays(1, &mut vao);
-        gl::GenBuffers(1, &mut vbo);
         gl::BindVertexArray(vao);
+        // Generate vbo/ebo buffers with id
+        gl::GenBuffers(1, &mut vbo);
+        gl::GenBuffers(1, &mut ebo);
+        // Bind array vertex data to vbo
         gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
         gl::BufferData(
             gl::ARRAY_BUFFER,
             (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
             &vertices[0] as *const f32 as *const c_void,
+            // Tell the GPU if our data are likely to change frequently
             gl::STATIC_DRAW,
         );
 
+        gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, ebo);
+        gl::BufferData(
+            gl::ELEMENT_ARRAY_BUFFER,
+            (indices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
+            &indices[0] as *const i32 as *const c_void,
+            gl::STATIC_DRAW,
+        );
         // Configure OpenGL to understand our vao
         gl::VertexAttribPointer(
             0,
