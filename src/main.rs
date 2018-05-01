@@ -1,11 +1,15 @@
 extern crate gl;
 extern crate glutin;
+extern crate nalgebra as na;
 
 mod utils;
 
 use std::str;
 use std::ptr;
+use std::time::SystemTime;
 use glutin::GlContext;
+use na::Vector4;
+
 use utils::create_shader_program;
 
 const TITLE: &str = "OpenGL";
@@ -36,10 +40,15 @@ fn main() {
     ];
     let indices: [i32; 6] = [0, 1, 3, 1, 2, 3];
 
-    let (shader_program, vao) = create_shader_program(&vertices, &indices);
+    let (shader, vao) = unsafe { create_shader_program(&vertices, &indices) };
 
+    let now = SystemTime::now();
     let mut running = true;
+
     while running {
+        let ellapsed = now.elapsed().unwrap();
+        let ellapsed = ellapsed.as_secs() as f32;
+
         event_loop.poll_events(|event| match event {
             glutin::Event::WindowEvent { event, .. } => match event {
                 glutin::WindowEvent::Closed => running = false,
@@ -54,7 +63,12 @@ fn main() {
             gl::Clear(gl::COLOR_BUFFER_BIT);
 
             // Draw our stuff
-            gl::UseProgram(shader_program);
+            shader.use_program();
+            shader.set_color(
+                "square_color",
+                Vector4::new(0., ellapsed.sin(), 0., 1.),
+            );
+
             gl::BindVertexArray(vao);
             // gl::DrawArrays(gl::TRIANGLES, 0, 3);
             gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, ptr::null());
