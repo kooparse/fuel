@@ -1,5 +1,6 @@
 extern crate gl;
 extern crate glutin;
+extern crate image;
 extern crate nalgebra as na;
 
 mod utils;
@@ -27,20 +28,20 @@ fn main() {
     let gl_window =
         glutin::GlWindow::new(window, context, &event_loop).unwrap();
 
-    unsafe {
-        // Set current context
-        gl_window.make_current().unwrap();
-    }
+    // Set current context
+    unsafe { gl_window.make_current().unwrap() }
 
     // Load all OpenGL function pointers
     gl::load_with(|symbol| gl_window.get_proc_address(symbol) as *const _);
 
-    let vertices: [f32; 12] = [
-        0.5, 0.5, 0.0, 0.5, -0.5, 0.0, -0.5, -0.5, 0.0, -0.5, 0.5, 0.0
+    let vertices: [f32; 20] = [
+        0.5, 0.5, 0.0, 1., 1., 0.5, -0.5, 0.0, 1., 0., -0.5, -0.5, 0.0, 0., 0.,
+        -0.5, 0.5, 0.0, 0., 1.,
     ];
     let indices: [i32; 6] = [0, 1, 3, 1, 2, 3];
 
-    let (shader, vao) = unsafe { create_shader_program(&vertices, &indices) };
+    let (shader, vao, texture) =
+        unsafe { create_shader_program(&vertices, &indices) };
 
     let now = SystemTime::now();
     let mut running = true;
@@ -69,6 +70,7 @@ fn main() {
                 Vector4::new(0., ellapsed.sin(), 0., 1.),
             );
 
+            gl::BindTexture(gl::TEXTURE_2D, texture);
             gl::BindVertexArray(vao);
             // gl::DrawArrays(gl::TRIANGLES, 0, 3);
             gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, ptr::null());

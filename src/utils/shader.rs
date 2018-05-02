@@ -3,6 +3,7 @@ use std::io::Read;
 use std::ptr;
 use std::str;
 use std::ffi::CString;
+use std::path::PathBuf;
 
 use gl;
 use gl::types::*;
@@ -88,7 +89,9 @@ impl Shader {
     }
 
     fn compile_shader(&self, shader_type: GLenum, file_path: &str) -> u32 {
-        let mut shader_file = File::open(&file_path).unwrap();
+        let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        path.push(file_path);
+        let mut shader_file = File::open(path).unwrap();
         let mut shader_string = String::new();
 
         // Transform file to string and store it in a variable
