@@ -44,7 +44,8 @@ pub unsafe fn create_shader_program(
         gl::STATIC_DRAW,
     );
     // Configure OpenGL to understand our vao
-    let stride = 5 * mem::size_of::<GLfloat>() as GLsizei;
+    let stride = 8 * mem::size_of::<GLfloat>() as GLsizei;
+    // For aPos data
     gl::VertexAttribPointer(
         0,
         // Array is divided into variables of 3 floats each
@@ -56,9 +57,10 @@ pub unsafe fn create_shader_program(
     );
     gl::EnableVertexAttribArray(0);
 
+    // For aColor data
     gl::VertexAttribPointer(
         1,
-        2,
+        3,
         gl::FLOAT,
         gl::FALSE,
         stride,
@@ -66,8 +68,16 @@ pub unsafe fn create_shader_program(
     );
     gl::EnableVertexAttribArray(1);
 
-    // gl::BindBuffer(gl::ARRAY_BUFFER, 0);
-    // gl::BindVertexArray(0);
+    // For aTexCoord data
+    gl::VertexAttribPointer(
+        2,
+        2,
+        gl::FLOAT,
+        gl::FALSE,
+        stride,
+        (6 * mem::size_of::<GLfloat>()) as *const c_void,
+    );
+    gl::EnableVertexAttribArray(2);
 
     // Texture
     let mut texture = 0;
