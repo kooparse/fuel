@@ -7,15 +7,20 @@ mod utils;
 
 use std::str;
 use std::ptr;
-use std::time::SystemTime;
+use std::thread::sleep;
+use std::time::{Duration, Instant};
 use glutin::GlContext;
-use na::Vector4;
+use na::{Matrix4, Vector3};
 
 use utils::create_shader_program;
 
 const TITLE: &str = "OpenGL";
 const WINDOW_WIDTH: u32 = 800;
 const WINDOW_HEIGT: u32 = 600;
+
+fn duration_to_secs(dur: Duration) -> f64 {
+    dur.as_secs() as f64 + dur.subsec_nanos() as f64 / 1_000_000_000.0
+}
 
 fn main() {
     let mut event_loop = glutin::EventsLoop::new();
@@ -44,12 +49,11 @@ fn main() {
     let (shader, vao, texture) =
         unsafe { create_shader_program(&vertices, &indices) };
 
-    let now = SystemTime::now();
+    let start = Instant::now();
     let mut running = true;
 
     while running {
-        let ellapsed = now.elapsed().unwrap();
-        let ellapsed = ellapsed.as_secs() as f32;
+        let dt = duration_to_secs(Instant::now().duration_since(start)) as f32;
 
         event_loop.poll_events(|event| match event {
             glutin::Event::WindowEvent { event, .. } => match event {
@@ -66,10 +70,9 @@ fn main() {
 
             // Draw our stuff
             shader.use_program();
-            shader.set_color(
-                "square_color",
-                Vector4::new(0., ellapsed.sin(), 0., 1.),
-            );
+
+            let trans = Matrix4::from_scaled_axis(&Vector3::z() * dt);
+            shader.set_transform(trans);
 
             gl::BindTexture(gl::TEXTURE_2D, texture);
             gl::BindVertexArray(vao);
@@ -78,5 +81,7 @@ fn main() {
         }
 
         gl_window.swap_buffers().unwrap();
+
+        sleep(Duration::from_millis(16));
     }
 }
