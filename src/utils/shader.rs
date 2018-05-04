@@ -66,14 +66,31 @@ impl Shader {
         }
     }
 
+    pub fn set_projection(&self, projection: Matrix4<f32>) {
+        self.set_matrix4("projection", projection.as_slice());
+    }
+
+    pub fn set_view(&self, view: Matrix4<f32>) {
+        self.set_matrix4("view", view.as_slice());
+    }
+
+    pub fn set_model(&self, model: Matrix4<f32>) {
+        self.set_matrix4("model", model.as_slice());
+    }
+
+    #[allow(dead_code)]
     pub fn set_transform(&self, transform: Matrix4<f32>) {
-        let shader_variable = self.get_location("transform");
+        self.set_matrix4("transform", transform.as_slice());
+    }
+
+    pub fn set_matrix4(&self, var_name: &str, transform: &[f32]) {
+        let shader_variable = self.get_location(var_name);
         unsafe {
             gl::UniformMatrix4fv(
                 shader_variable,
                 1,
                 gl::FALSE,
-                transform.as_slice().as_ptr(),
+                transform.as_ptr(),
             );
         }
     }

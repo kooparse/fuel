@@ -10,6 +10,7 @@ use image::GenericImage;
 
 use utils::shader::Shader;
 
+#[allow(unused_variables)]
 pub unsafe fn create_shader_program(
     vertices: &[f32],
     indices: &[i32],
@@ -20,12 +21,15 @@ pub unsafe fn create_shader_program(
         "src/assets/shaders/shader.fs",
     );
 
-    let (mut vbo, mut vao, mut ebo) = (0, 0, 0);
+    let (mut vbo, mut vao) = (0, 0);
+
+    gl::Enable(gl::DEPTH_TEST);
+
     gl::GenVertexArrays(1, &mut vao);
     gl::BindVertexArray(vao);
     // Generate vbo/ebo buffers with id
     gl::GenBuffers(1, &mut vbo);
-    gl::GenBuffers(1, &mut ebo);
+    // gl::GenBuffers(1, &mut ebo);
     // Bind array vertex data to vbo
     gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
     gl::BufferData(
@@ -36,15 +40,16 @@ pub unsafe fn create_shader_program(
         gl::STATIC_DRAW,
     );
 
-    gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, ebo);
-    gl::BufferData(
-        gl::ELEMENT_ARRAY_BUFFER,
-        (indices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-        &indices[0] as *const i32 as *const c_void,
-        gl::STATIC_DRAW,
-    );
+    // gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, ebo);
+    // gl::BufferData(
+    //     gl::ELEMENT_ARRAY_BUFFER,
+    //     (indices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
+    //     &indices[0] as *const i32 as *const c_void,
+    //     gl::STATIC_DRAW,
+    // );
     // Configure OpenGL to understand our vao
-    let stride = 8 * mem::size_of::<GLfloat>() as GLsizei;
+    let stride = 5 * mem::size_of::<GLfloat>() as GLsizei;
+
     // For aPos data
     gl::VertexAttribPointer(
         0,
@@ -57,27 +62,27 @@ pub unsafe fn create_shader_program(
     );
     gl::EnableVertexAttribArray(0);
 
-    // For aColor data
+    // // For aColor data
+    // gl::VertexAttribPointer(
+    //     1,
+    //     3,
+    //     gl::FLOAT,
+    //     gl::FALSE,
+    //     stride,
+    //     (3 * mem::size_of::<GLfloat>()) as *const c_void,
+    // );
+    // gl::EnableVertexAttribArray(1);
+
+    // For aTexCoord data
     gl::VertexAttribPointer(
         1,
-        3,
+        2,
         gl::FLOAT,
         gl::FALSE,
         stride,
         (3 * mem::size_of::<GLfloat>()) as *const c_void,
     );
     gl::EnableVertexAttribArray(1);
-
-    // For aTexCoord data
-    gl::VertexAttribPointer(
-        2,
-        2,
-        gl::FLOAT,
-        gl::FALSE,
-        stride,
-        (6 * mem::size_of::<GLfloat>()) as *const c_void,
-    );
-    gl::EnableVertexAttribArray(2);
 
     // Texture
     let mut texture = 0;
@@ -112,8 +117,8 @@ pub unsafe fn create_shader_program(
     );
 
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    path.push("src/assets/textures/container.jpg");
-    println!("{:?}", path);
+    path.push("src/assets/textures/lunar_surface.png");
+
     let img = image::open(path).expect("Failed to load texture");
     let img_data = img.raw_pixels();
 
