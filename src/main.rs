@@ -4,6 +4,7 @@ extern crate glutin;
 extern crate image;
 extern crate nalgebra as na;
 
+mod renderer;
 mod utils;
 
 use std::str;
@@ -12,15 +13,11 @@ use std::time::{Duration, Instant};
 use glutin::GlContext;
 use na::{Isometry3, Perspective3, Point3, Vector3};
 
-use utils::create_shader_program;
+use renderer::Pipeline;
 
 const TITLE: &str = "Engine";
 const WINDOW_WIDTH: f32 = 800.;
 const WINDOW_HEIGT: f32 = 600.;
-
-fn duration_to_secs(dur: Duration) -> f64 {
-    dur.as_secs() as f64 + dur.subsec_nanos() as f64 / 1_000_000_000.0
-}
 
 fn main() {
     let mut event_loop = glutin::EventsLoop::new();
@@ -64,16 +61,25 @@ fn main() {
         Vector3::new(-5., -3., 10.),
     ];
 
-    let indices: [i32; 6] = [0, 1, 3, 1, 2, 3];
+    let screen_ratio = WINDOW_WIDTH / WINDOW_HEIGT;
+    let mut pipeline =
+        Pipeline::new(&vertices, "cube.vs", "cube.fs", "lunar_surface.png");
+    pipeline.shader.use_program();
 
-    let (shader, vao, texture) =
-        unsafe { create_shader_program(&vertices, &indices) };
+    // MVP with main camera
+    let eye = Point3::new(0.0, 0.0, -2.0);
+    let target = Point3::new(0.0, 0.0, 0.0);
+    let view = Isometry3::look_at_rh(&eye, &target, &Vector3::y());
+    let projection = Perspective3::new(screen_ratio, 45., 0.1, 100.);
+    pipeline.shader.set_projection(projection.to_homogeneous());
+    pipeline.shader.set_view(view.to_homogeneous());
 
     let start = Instant::now();
     let mut running = true;
 
     while running {
-        let dt = duration_to_secs(Instant::now().duration_since(start)) as f32;
+        let dt = utils::duration_to_secs(Instant::now().duration_since(start))
+            as f32;
 
         event_loop.poll_events(|event| match event {
             glutin::Event::WindowEvent { event, .. } => match event {
@@ -88,34 +94,16 @@ fn main() {
             gl::ClearColor(1., 1., 1., 1.);
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
-            // Draw our stuff
-            shader.use_program();
-
-            gl::BindTexture(gl::TEXTURE_2D, texture);
-            gl::BindVertexArray(vao);
-
-            let eye = Point3::new(0.0, 0.0, -2.0);
-            let target = Point3::new(0.0, 0.0, 0.0);
-
-            let view = Isometry3::look_at_rh(&eye, &target, &Vector3::y());
-
-            let projection =
-                Perspective3::new(WINDOW_WIDTH / WINDOW_HEIGT, 45., 0.1, 100.);
-
-            shader.set_projection(projection.to_homogeneous());
-            shader.set_view(view.to_homogeneous());
-
             for (i, position) in cube_positions.iter().enumerate() {
                 let angle = 20. * i as f32;
                 let model = Isometry3::new(
                     *position,
                     Vector3::new(-dt, -dt, angle - dt),
                 );
-                shader.set_model(model.to_homogeneous());
-                gl::DrawArrays(gl::TRIANGLES, 0, 36);
-            }
 
-            // gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, ptr::null());
+                pipeline.shader.set_model(model.to_homogeneous());
+                pipeline.render();
+            }
         }
 
         gl_window.swap_buffers().unwrap();

@@ -123,6 +123,7 @@ impl Shader {
 
     fn compile_shader(&self, shader_type: GLenum, file_path: &str) -> u32 {
         let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        path.push("src/assets/shaders");
         path.push(file_path);
         let mut shader_file = File::open(path).unwrap();
         let mut shader_string = String::new();
