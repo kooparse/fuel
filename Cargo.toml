@@ -1,5 +1,5 @@
 [package]
-name = "opengl-rs"
+name = "3d-engine-rs"
 version = "0.1.0"
 authors = ["Alexandre Chêne <kooparse@protonmail.com>"]
 
