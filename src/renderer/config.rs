@@ -35,6 +35,18 @@ impl<'a> RendererConfig<'a> {
         return config;
     }
 
+    pub fn set_line_mode(&self) {
+        unsafe { gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE) }
+    }
+
+    pub fn set_point_mode(&self) {
+        unsafe { gl::PolygonMode(gl::FRONT_AND_BACK, gl::POINT) }
+    }
+
+    pub fn set_fill_mode(&self) {
+        unsafe { gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL) }
+    }
+
     unsafe fn set_vertice(&mut self, vertices: &[f32]) {
         let (mut vao, mut vbo) = (0, 0);
 

@@ -7,6 +7,7 @@ extern crate nalgebra as na;
 mod renderer;
 mod utils;
 
+use glutin::VirtualKeyCode;
 use std::str;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
@@ -83,6 +84,14 @@ fn main() {
 
         event_loop.poll_events(|event| match event {
             glutin::Event::WindowEvent { event, .. } => match event {
+                glutin::WindowEvent::KeyboardInput { input, .. } => match input
+                    .virtual_keycode
+                {
+                    Some(VirtualKeyCode::W) => pipeline.config.set_line_mode(),
+                    Some(VirtualKeyCode::F) => pipeline.config.set_fill_mode(),
+                    Some(VirtualKeyCode::P) => pipeline.config.set_point_mode(),
+                    _ => (),
+                },
                 glutin::WindowEvent::Closed => running = false,
                 glutin::WindowEvent::Resized(h, w) => gl_window.resize(w, h),
                 _ => (),
