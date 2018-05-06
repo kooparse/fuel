@@ -90,6 +90,7 @@ fn main() {
                     Some(VirtualKeyCode::W) => pipeline.config.set_line_mode(),
                     Some(VirtualKeyCode::F) => pipeline.config.set_fill_mode(),
                     Some(VirtualKeyCode::P) => pipeline.config.set_point_mode(),
+                    Some(VirtualKeyCode::Escape) => running = false,
                     _ => (),
                 },
                 glutin::WindowEvent::Closed => running = false,
