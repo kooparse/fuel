@@ -35,6 +35,7 @@ impl<'a> RendererConfig<'a> {
         return config;
     }
 
+    // Draw wireframe polygons
     pub fn set_line_mode(&self) {
         unsafe { gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE) }
     }
@@ -77,10 +78,6 @@ impl<'a> RendererConfig<'a> {
             ptr::null(),
         );
         gl::EnableVertexAttribArray(0);
-
-        // Draw wireframe polygons if flag is set
-        #[cfg(feature = "wireframe")]
-        gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
 
         self.vbo = vbo;
         self.vao = vao;
