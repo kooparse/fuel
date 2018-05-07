@@ -9,6 +9,7 @@ use gl;
 use gl::types::*;
 use na::{Matrix4, Vector4};
 
+#[derive(Clone, Debug)]
 pub struct Shader {
     pub id: u32,
 }
@@ -33,7 +34,7 @@ impl Shader {
             shader.id = shader_program_id;
         }
 
-        return shader;
+        shader
     }
 
     pub fn use_program(&self) {
@@ -102,12 +103,12 @@ impl Shader {
 
     unsafe fn check_shader_compile_error(&self, shader: GLuint) {
         const CAPACITY: usize = 512;
-        let mut success = gl::FALSE as GLint;
+        let mut success = i32::from(gl::FALSE);
         let mut info_log = Vec::with_capacity(CAPACITY);
         info_log.set_len(CAPACITY - 1);
 
         gl::GetShaderiv(shader, gl::COMPILE_STATUS, &mut success);
-        if success != gl::TRUE as GLint {
+        if success != i32::from(gl::TRUE) {
             gl::GetShaderInfoLog(
                 shader,
                 512,
@@ -149,7 +150,7 @@ impl Shader {
             gl::CompileShader(shader);
             self.check_shader_compile_error(shader);
 
-            return shader;
+            shader
         }
     }
 }

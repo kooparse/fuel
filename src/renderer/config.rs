@@ -7,6 +7,7 @@ use std::ptr;
 
 use renderer::Texture;
 
+#[derive(Clone, Debug)]
 pub struct RendererConfig<'a> {
     pub vertices: &'a [f32],
     pub vbo: u32,
@@ -16,7 +17,7 @@ pub struct RendererConfig<'a> {
 }
 
 impl<'a> RendererConfig<'a> {
-    pub fn new(vertices: &'a [f32], texture: Texture) -> RendererConfig<'a> {
+    pub fn new(vertices: &'a [f32], texture: &Texture) -> RendererConfig<'a> {
         let stride = 5 * mem::size_of::<GLfloat>() as GLsizei;
         let mut config = RendererConfig {
             vao: 0,
@@ -29,10 +30,10 @@ impl<'a> RendererConfig<'a> {
         unsafe {
             // Order is important
             config.set_vertice(vertices);
-            config.set_texture(texture);
+            config.set_texture(&texture);
         }
 
-        return config;
+        config
     }
 
     // Draw wireframe polygons
@@ -83,7 +84,7 @@ impl<'a> RendererConfig<'a> {
         self.vao = vao;
     }
 
-    unsafe fn set_texture(&mut self, texture: Texture) {
+    unsafe fn set_texture(&mut self, texture: &Texture) {
         let mut texture_id = texture.id;
         gl::GenTextures(1, &mut texture_id);
         gl::BindTexture(gl::TEXTURE_2D, texture_id);

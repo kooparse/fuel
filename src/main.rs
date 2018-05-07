@@ -1,3 +1,6 @@
+#![cfg_attr(feature = "clippy", feature(plugin))]
+#![cfg_attr(feature = "clippy", plugin(clippy))]
+
 extern crate cgmath;
 extern crate gl;
 extern crate glutin;
@@ -7,12 +10,14 @@ extern crate nalgebra as na;
 mod renderer;
 mod utils;
 
-use glutin::VirtualKeyCode;
+use glutin::{ElementState, VirtualKeyCode};
 use std::str;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
-use glutin::GlContext;
+use glutin::{EventsLoop, GlContext, GlWindow};
 use na::{Isometry3, Perspective3, Point3, Vector3};
+use glutin::Event::WindowEvent;
+use glutin::WindowEvent::{Closed, KeyboardInput, Resized};
 
 use renderer::Pipeline;
 
@@ -21,16 +26,15 @@ const WINDOW_WIDTH: f32 = 800.;
 const WINDOW_HEIGT: f32 = 600.;
 
 fn main() {
-    let mut event_loop = glutin::EventsLoop::new();
+    let mut window_loop = EventsLoop::new();
     let window = glutin::WindowBuilder::new()
         .with_title(TITLE)
         .with_dimensions(WINDOW_WIDTH as u32, WINDOW_HEIGT as u32);
 
     let context = glutin::ContextBuilder::new().with_vsync(true);
 
-    let gl_window =
-        glutin::GlWindow::new(window, context, &event_loop).unwrap();
-
+    let gl_window = GlWindow::new(window, context, &window_loop).unwrap();
+    //
     // Set current context
     unsafe { gl_window.make_current().unwrap() }
 
@@ -75,6 +79,8 @@ fn main() {
     pipeline.shader.set_projection(projection.to_homogeneous());
     pipeline.shader.set_view(view.to_homogeneous());
 
+    let mut rotate_direction: i8 = -1;
+
     let start = Instant::now();
     let mut running = true;
 
@@ -82,22 +88,39 @@ fn main() {
         let dt = utils::duration_to_secs(Instant::now().duration_since(start))
             as f32;
 
-        event_loop.poll_events(|event| match event {
-            glutin::Event::WindowEvent { event, .. } => match event {
-                glutin::WindowEvent::KeyboardInput { input, .. } => match input
-                    .virtual_keycode
-                {
-                    Some(VirtualKeyCode::W) => pipeline.config.set_line_mode(),
-                    Some(VirtualKeyCode::F) => pipeline.config.set_fill_mode(),
-                    Some(VirtualKeyCode::P) => pipeline.config.set_point_mode(),
-                    Some(VirtualKeyCode::Escape) => running = false,
+        window_loop.poll_events(|e| {
+            if let WindowEvent { event, .. } = e {
+                match event {
+                    KeyboardInput {
+                        input:
+                            glutin::KeyboardInput {
+                                state: ElementState::Pressed,
+                                virtual_keycode,
+                                ..
+                            },
+                        ..
+                    } => match virtual_keycode {
+                        Some(VirtualKeyCode::W) => {
+                            pipeline.config.set_line_mode()
+                        }
+                        Some(VirtualKeyCode::F) => {
+                            pipeline.config.set_fill_mode()
+                        }
+                        Some(VirtualKeyCode::P) => {
+                            pipeline.config.set_point_mode()
+                        }
+                        Some(VirtualKeyCode::R) => {
+                            rotate_direction =
+                                if rotate_direction == -1 { 1 } else { -1 }
+                        }
+                        Some(VirtualKeyCode::Escape) => running = false,
+                        _ => (),
+                    },
+                    Closed => running = false,
+                    Resized(w, h) => gl_window.resize(w, h),
                     _ => (),
-                },
-                glutin::WindowEvent::Closed => running = false,
-                glutin::WindowEvent::Resized(h, w) => gl_window.resize(w, h),
-                _ => (),
-            },
-            _ => (),
+                }
+            }
         });
 
         unsafe {
@@ -108,7 +131,11 @@ fn main() {
                 let angle = 20. * i as f32;
                 let model = Isometry3::new(
                     *position,
-                    Vector3::new(-dt, -dt, angle - dt),
+                    Vector3::new(
+                        dt * f32::from(rotate_direction),
+                        -dt * f32::from(rotate_direction),
+                        angle - dt * f32::from(rotate_direction),
+                    ),
                 );
 
                 pipeline.shader.set_model(model.to_homogeneous());
@@ -117,7 +144,6 @@ fn main() {
         }
 
         gl_window.swap_buffers().unwrap();
-
         sleep(Duration::from_millis(16));
     }
 }

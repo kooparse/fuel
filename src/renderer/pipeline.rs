@@ -4,6 +4,7 @@ use renderer::RendererConfig;
 use renderer::Shader;
 use renderer::Texture;
 
+#[derive(Clone, Debug)]
 pub struct Pipeline<'a> {
     pub config: RendererConfig<'a>,
     pub texture: Texture,
@@ -19,7 +20,7 @@ impl<'a> Pipeline<'a> {
     ) -> Pipeline<'a> {
         let shader = Shader::new(vertex_shader_file, frag_shader_file);
         let mut texture = Texture::new(texture_file_path);
-        let config = RendererConfig::new(vertices, texture.clone());
+        let config = RendererConfig::new(vertices, &texture.clone());
         texture.id = config.texture_id;
 
         Pipeline {
