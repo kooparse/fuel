@@ -1,5 +1,5 @@
 [package]
-name = "3d-engine-rs"
+name = "fuel"
 version = "0.1.0"
 authors = ["Alexandre Chêne <kooparse@protonmail.com>"]
 
