@@ -1,16 +1,4 @@
 [[package]]
-name = "3d-engine-rs"
-version = "0.1.0"
-dependencies = [
- "cgmath 0.16.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "clippy 0.0.196 (git+https://github.com/rust-lang-nursery/rust-clippy.git)",
- "gl 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "glutin 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "image 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "nalgebra 0.14.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "adler32"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -301,6 +289,18 @@ dependencies = [
 name = "fuchsia-zircon-sys"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "fuel"
+version = "0.1.0"
+dependencies = [
+ "cgmath 0.16.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "clippy 0.0.196 (git+https://github.com/rust-lang-nursery/rust-clippy.git)",
+ "gl 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "glutin 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "image 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nalgebra 0.14.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "generic-array"
