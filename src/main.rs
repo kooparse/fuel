@@ -10,14 +10,15 @@ extern crate nalgebra as na;
 mod renderer;
 mod utils;
 
-use glutin::{ElementState, MouseCursor, VirtualKeyCode};
+use glutin::{ElementState, MouseButton, MouseCursor, VirtualKeyCode};
 use std::str;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 use glutin::{EventsLoop, GlContext, GlWindow};
 use na::{Isometry3, Matrix4, Perspective3, Point3, Vector3};
 use glutin::Event::WindowEvent;
-use glutin::WindowEvent::{CloseRequested, CursorMoved, KeyboardInput, Resized};
+use glutin::WindowEvent::{CloseRequested, CursorMoved, KeyboardInput,
+                          MouseInput, Resized};
 
 use renderer::Pipeline;
 
@@ -31,12 +32,9 @@ fn main() {
         .with_title(TITLE)
         .with_dimensions(WINDOW_WIDTH as u32, WINDOW_HEIGT as u32);
 
-    // gl_window..set_mouse_position(last_cursor_pos_x, last_cursor_pos_y);
     let context = glutin::ContextBuilder::new().with_vsync(true);
-
     let gl_window = GlWindow::new(window, context, &window_loop).unwrap();
 
-    //
     // Set current context
     unsafe { gl_window.make_current().unwrap() }
 
@@ -82,6 +80,7 @@ fn main() {
     let start = Instant::now();
     let mut running = true;
 
+    let mut is_mouse_right_pressed = false;
     // Intialize cursor position to be at
     // the center of the screen
     let mut last_cursor_pos_x: f32 = WINDOW_WIDTH / 2.;
@@ -100,7 +99,7 @@ fn main() {
     gl_window
         .window()
         .set_cursor_position(last_cursor_pos_x as i32, last_cursor_pos_y as i32)
-        .expect("Failed to set cursor position at the center");
+        .expect("Failed to set cursor position at the center of the screen");
 
     // Hide cursor
     gl_window.window().set_cursor(MouseCursor::NoneCursor);
@@ -115,11 +114,21 @@ fn main() {
         window_loop.poll_events(|e| {
             if let WindowEvent { event, .. } = e {
                 match event {
-                    CursorMoved {
-                        position: (pos_x, pos_y),
-                        // modifiers,
+                    MouseInput {
+                        button: MouseButton::Right,
+                        state,
                         ..
                     } => {
+                        is_mouse_right_pressed = state == ElementState::Pressed
+                    }
+                    CursorMoved {
+                        position: (pos_x, pos_y),
+                        ..
+                    } => {
+                        if !is_mouse_right_pressed {
+                            return;
+                        }
+
                         let (pos_x, pos_y) = (pos_x as f32, pos_y as f32);
                         if first_cursor_move {
                             last_cursor_pos_x = pos_x;
