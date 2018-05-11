@@ -1,5 +1,5 @@
-use image::GenericImage;
 use image;
+use image::GenericImage;
 use std::path::PathBuf;
 
 const TEXTURE_ASSET_FOLDER: &str = "src/assets/textures";

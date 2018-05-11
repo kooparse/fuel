@@ -10,15 +10,15 @@ extern crate nalgebra as na;
 mod renderer;
 mod utils;
 
-use glutin::{ElementState, MouseButton, MouseCursor, VirtualKeyCode};
-use std::str;
-use std::thread::sleep;
-use std::time::{Duration, Instant};
-use glutin::{EventsLoop, GlContext, GlWindow};
-use na::{Isometry3, Matrix4, Perspective3, Point3, Vector3};
 use glutin::Event::WindowEvent;
 use glutin::WindowEvent::{CloseRequested, CursorMoved, KeyboardInput,
                           MouseInput, Resized};
+use glutin::{ElementState, MouseButton, MouseCursor, VirtualKeyCode};
+use glutin::{EventsLoop, GlContext, GlWindow};
+use na::{Isometry3, Matrix4, Perspective3, Point3, Vector3};
+use std::error::Error;
+use std::thread::sleep;
+use std::time::{Duration, Instant};
 
 use renderer::Pipeline;
 
@@ -26,17 +26,17 @@ const TITLE: &str = "Engine";
 const WINDOW_WIDTH: f32 = 800.;
 const WINDOW_HEIGT: f32 = 600.;
 
-fn main() {
+fn main() -> Result<(), Box<Error>> {
     let mut window_loop = EventsLoop::new();
     let window = glutin::WindowBuilder::new()
         .with_title(TITLE)
         .with_dimensions(WINDOW_WIDTH as u32, WINDOW_HEIGT as u32);
 
     let context = glutin::ContextBuilder::new().with_vsync(true);
-    let gl_window = GlWindow::new(window, context, &window_loop).unwrap();
+    let gl_window = GlWindow::new(window, context, &window_loop)?;
 
     // Set current context
-    unsafe { gl_window.make_current().unwrap() }
+    unsafe { gl_window.make_current()? }
 
     // Load all OpenGL function pointers
     gl::load_with(|symbol| gl_window.get_proc_address(symbol) as *const _);
@@ -98,11 +98,16 @@ fn main() {
 
     gl_window
         .window()
-        .set_cursor_position(last_cursor_pos_x as i32, last_cursor_pos_y as i32)
+        .set_cursor_position(
+            last_cursor_pos_x as i32,
+            last_cursor_pos_y as i32,
+        )
         .expect("Failed to set cursor position at the center of the screen");
 
     // Hide cursor
-    gl_window.window().set_cursor(MouseCursor::NoneCursor);
+    gl_window
+        .window()
+        .set_cursor(MouseCursor::NoneCursor);
 
     while running {
         let current_frame = utils::duration_to_secs(start.elapsed()) as f32;
@@ -194,8 +199,11 @@ fn main() {
                             pipeline.config.set_point_mode()
                         }
                         Some(VirtualKeyCode::R) => {
-                            rotate_direction =
-                                if rotate_direction == -1 { 1 } else { -1 }
+                            rotate_direction = if rotate_direction == -1 {
+                                1
+                            } else {
+                                -1
+                            }
                         }
                         Some(VirtualKeyCode::Escape) => running = false,
                         _ => (),
@@ -233,7 +241,9 @@ fn main() {
             }
         }
 
-        gl_window.swap_buffers().unwrap();
+        gl_window.swap_buffers()?;
         sleep(Duration::from_millis(16));
     }
+
+    Ok(())
 }

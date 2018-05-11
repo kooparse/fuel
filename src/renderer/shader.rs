@@ -1,9 +1,9 @@
+use std::ffi::CString;
 use std::fs::File;
 use std::io::Read;
+use std::path::PathBuf;
 use std::ptr;
 use std::str;
-use std::ffi::CString;
-use std::path::PathBuf;
 
 use gl;
 use gl::types::*;
