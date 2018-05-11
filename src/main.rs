@@ -15,7 +15,7 @@ use std::str;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 use glutin::{EventsLoop, GlContext, GlWindow};
-use na::{Isometry3, Perspective3, Point3, Vector3};
+use na::{Isometry3, Matrix4, Perspective3, Point3, Vector3};
 use glutin::Event::WindowEvent;
 use glutin::WindowEvent::{Closed, KeyboardInput, Resized};
 
@@ -59,7 +59,7 @@ fn main() {
     ];
 
     let cube_positions: [Vector3<f32>; 5] = [
-        Vector3::new(0., 0., 1.),
+        Vector3::new(0., 0., 0.),
         Vector3::new(2., 0., 3.),
         Vector3::new(-2., 0., 2.),
         Vector3::new(1., 3., 6.),
@@ -68,25 +68,31 @@ fn main() {
 
     let screen_ratio = WINDOW_WIDTH / WINDOW_HEIGT;
     let mut pipeline =
-        Pipeline::new(&vertices, "cube.vs", "cube.fs", "lunar_surface.png");
+        Pipeline::new(&vertices, "cube.vs", "cube.fs", "container.jpg");
     pipeline.shader.use_program();
 
     // MVP with main camera
-    let eye = Point3::new(0.0, 0.0, -2.0);
-    let target = Point3::new(0.0, 0.0, 0.0);
-    let view = Isometry3::look_at_rh(&eye, &target, &Vector3::y());
-    let projection = Perspective3::new(screen_ratio, 45., 0.1, 100.);
-    pipeline.shader.set_projection(projection.to_homogeneous());
-    pipeline.shader.set_view(view.to_homogeneous());
+    let projection =
+        Perspective3::new(screen_ratio, 45., 0.1, 100.).to_homogeneous();
 
     let mut rotate_direction: i8 = -1;
 
     let start = Instant::now();
     let mut running = true;
 
+    let mut camera_pos = Vector3::new(0., 0., 3.);
+    let camera_front = Vector3::new(0., 0., -1.);
+    let camera_up = Vector3::new(0., 1., 0.);
+
+    let mut dt: f32;
+    let mut last_frame: f32 = 0.;
+
     while running {
-        let dt = utils::duration_to_secs(Instant::now().duration_since(start))
-            as f32;
+        let current_frame = utils::duration_to_secs(start.elapsed()) as f32;
+        dt = current_frame - last_frame;
+        last_frame = current_frame;
+
+        let camera_speed = 2.5 * dt;
 
         window_loop.poll_events(|e| {
             if let WindowEvent { event, .. } = e {
@@ -101,12 +107,26 @@ fn main() {
                         ..
                     } => match virtual_keycode {
                         Some(VirtualKeyCode::W) => {
-                            pipeline.config.set_line_mode()
+                            camera_pos += camera_speed * camera_front;
+                        }
+                        Some(VirtualKeyCode::S) => {
+                            camera_pos -= camera_speed * camera_front;
+                        }
+                        Some(VirtualKeyCode::A) => {
+                            camera_pos -=
+                                camera_front.cross(&camera_up) * camera_speed;
+                        }
+                        Some(VirtualKeyCode::D) => {
+                            camera_pos +=
+                                camera_front.cross(&camera_up) * camera_speed;
                         }
                         Some(VirtualKeyCode::F) => {
                             pipeline.config.set_fill_mode()
                         }
                         Some(VirtualKeyCode::P) => {
+                            pipeline.config.set_line_mode()
+                        }
+                        Some(VirtualKeyCode::L) => {
                             pipeline.config.set_point_mode()
                         }
                         Some(VirtualKeyCode::R) => {
@@ -123,22 +143,28 @@ fn main() {
             }
         });
 
+        let eye = Point3::from_coordinates(camera_pos);
+        let target = Point3::from_coordinates(camera_pos + camera_front);
+        let view = Matrix4::look_at_rh(&eye, &target, &camera_up);
+
         unsafe {
             gl::ClearColor(1., 1., 1., 1.);
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
             for (i, position) in cube_positions.iter().enumerate() {
                 let angle = 20. * i as f32;
-                let model = Isometry3::new(
-                    *position,
-                    Vector3::new(
-                        dt * f32::from(rotate_direction),
-                        -dt * f32::from(rotate_direction),
-                        angle - dt * f32::from(rotate_direction),
-                    ),
+                let rotation = Vector3::new(
+                    current_frame * f32::from(rotate_direction),
+                    -current_frame * f32::from(rotate_direction),
+                    angle - current_frame * f32::from(rotate_direction),
                 );
 
-                pipeline.shader.set_model(model.to_homogeneous());
+                let model =
+                    Isometry3::new(*position, rotation).to_homogeneous();
+
+                // Order is very important
+                let mvp = projection * view * model;
+                pipeline.shader.set_mvp(mvp);
                 pipeline.render();
             }
         }

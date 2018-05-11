@@ -67,16 +67,8 @@ impl Shader {
         }
     }
 
-    pub fn set_projection(&self, projection: Matrix4<f32>) {
-        self.set_matrix4("projection", projection.as_slice());
-    }
-
-    pub fn set_view(&self, view: Matrix4<f32>) {
-        self.set_matrix4("view", view.as_slice());
-    }
-
-    pub fn set_model(&self, model: Matrix4<f32>) {
-        self.set_matrix4("model", model.as_slice());
+    pub fn set_mvp(&self, mvp: Matrix4<f32>) {
+        self.set_matrix4("mvp", mvp.as_slice());
     }
 
     #[allow(dead_code)]
