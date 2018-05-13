@@ -7,6 +7,7 @@ extern crate glutin;
 extern crate image;
 extern crate nalgebra as na;
 
+mod camera;
 mod renderer;
 mod utils;
 
@@ -15,11 +16,12 @@ use glutin::WindowEvent::{CloseRequested, CursorMoved, KeyboardInput,
                           MouseInput, Resized};
 use glutin::{ElementState, MouseButton, MouseCursor, VirtualKeyCode};
 use glutin::{EventsLoop, GlContext, GlWindow};
-use na::{Isometry3, Matrix4, Perspective3, Point3, Vector3};
+use na::{Isometry3, Vector3};
 use std::error::Error;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 
+use camera::CameraMovement;
 use renderer::Pipeline;
 
 const TITLE: &str = "Engine";
@@ -28,12 +30,24 @@ const WINDOW_HEIGT: f32 = 600.;
 
 fn main() -> Result<(), Box<Error>> {
     let mut window_loop = EventsLoop::new();
-    let window = glutin::WindowBuilder::new()
+    let win_conf = glutin::WindowBuilder::new()
         .with_title(TITLE)
         .with_dimensions(WINDOW_WIDTH as u32, WINDOW_HEIGT as u32);
 
     let context = glutin::ContextBuilder::new().with_vsync(true);
-    let gl_window = GlWindow::new(window, context, &window_loop)?;
+    let gl_window = GlWindow::new(win_conf, context, &window_loop)?;
+
+    let window = gl_window.window();
+
+    let mut cam =
+        camera::FirstPerson::new((WINDOW_WIDTH, WINDOW_HEIGT), 45., 0.1, 100.);
+    let projection = cam.get_projection();
+
+    window
+        .set_cursor_position(cam.last_pos.0 as i32, cam.last_pos.1 as i32)
+        .expect("Failed to set cursor position at the center of the screen");
+    // Hide cursor
+    window.set_cursor(MouseCursor::NoneCursor);
 
     // Set current context
     unsafe { gl_window.make_current()? }
@@ -66,55 +80,22 @@ fn main() -> Result<(), Box<Error>> {
         Vector3::new(-5., -3., 10.),
     ];
 
-    let screen_ratio = WINDOW_WIDTH / WINDOW_HEIGT;
     let mut pipeline =
         Pipeline::new(&vertices, "cube.vs", "cube.fs", "container.jpg");
     pipeline.shader.use_program();
 
-    // MVP with main camera
-    let projection =
-        Perspective3::new(screen_ratio, 45., 0.1, 100.).to_homogeneous();
-
-    let mut rotate_direction: i8 = -1;
-
-    let start = Instant::now();
-    let mut running = true;
-
+    let now = Instant::now();
     let mut is_mouse_right_pressed = false;
-    // Intialize cursor position to be at
-    // the center of the screen
-    let mut last_cursor_pos_x: f32 = WINDOW_WIDTH / 2.;
-    let mut last_cursor_pos_y: f32 = WINDOW_HEIGT / 2.;
-    let mut first_cursor_move: bool = true;
-    let mut yaw: f32 = -90.;
-    let mut pitch: f32 = 0.;
-
-    let mut camera_pos = Vector3::new(0., 0., 3.);
-    let mut camera_front = Vector3::new(0., 0., -1.);
-    let camera_up = Vector3::new(0., 1., 0.);
-
+    let mut running = true;
     let mut dt: f32;
     let mut last_frame: f32 = 0.;
 
-    gl_window
-        .window()
-        .set_cursor_position(
-            last_cursor_pos_x as i32,
-            last_cursor_pos_y as i32,
-        )
-        .expect("Failed to set cursor position at the center of the screen");
-
-    // Hide cursor
-    gl_window
-        .window()
-        .set_cursor(MouseCursor::NoneCursor);
-
     while running {
-        let current_frame = utils::duration_to_secs(start.elapsed()) as f32;
+        let current_frame = utils::duration_to_secs(now.elapsed()) as f32;
         dt = current_frame - last_frame;
         last_frame = current_frame;
-
-        let camera_speed = 2.5 * dt;
+        // set delta time for each frame
+        cam.set_dt(dt);
 
         window_loop.poll_events(|e| {
             if let WindowEvent { event, .. } = e {
@@ -129,43 +110,9 @@ fn main() -> Result<(), Box<Error>> {
                     CursorMoved {
                         position: (pos_x, pos_y),
                         ..
-                    } => {
-                        if !is_mouse_right_pressed {
-                            return;
-                        }
-
-                        let (pos_x, pos_y) = (pos_x as f32, pos_y as f32);
-                        if first_cursor_move {
-                            last_cursor_pos_x = pos_x;
-                            last_cursor_pos_y = pos_y;
-                            first_cursor_move = false;
-                        }
-
-                        let mut x_offset = pos_x - last_cursor_pos_x;
-                        let mut y_offset = last_cursor_pos_y - pos_y;
-                        last_cursor_pos_x = pos_x;
-                        last_cursor_pos_y = pos_y;
-
-                        let sensibility = 0.05;
-                        x_offset *= sensibility;
-                        y_offset *= sensibility;
-
-                        yaw += x_offset;
-                        pitch += y_offset;
-
-                        if pitch > 89. {
-                            pitch = 89.
-                        }
-                        if pitch < -89. {
-                            pitch = -89.
-                        }
-
-                        camera_front = Vector3::new(
-                            yaw.to_radians().cos() * pitch.to_radians().cos(),
-                            pitch.to_radians().sin(),
-                            yaw.to_radians().sin() * pitch.to_radians().cos(),
-                        ).normalize();
-                    }
+                    } => if is_mouse_right_pressed {
+                        cam.spin_direction(pos_x as f32, pos_y as f32);
+                    },
                     KeyboardInput {
                         input:
                             glutin::KeyboardInput {
@@ -176,18 +123,16 @@ fn main() -> Result<(), Box<Error>> {
                         ..
                     } => match virtual_keycode {
                         Some(VirtualKeyCode::W) => {
-                            camera_pos += camera_speed * camera_front;
+                            cam.move_direction(CameraMovement::FORWARD)
                         }
                         Some(VirtualKeyCode::S) => {
-                            camera_pos -= camera_speed * camera_front;
+                            cam.move_direction(CameraMovement::BACKWARD)
                         }
                         Some(VirtualKeyCode::A) => {
-                            camera_pos -=
-                                camera_front.cross(&camera_up) * camera_speed;
+                            cam.move_direction(CameraMovement::LEFT)
                         }
                         Some(VirtualKeyCode::D) => {
-                            camera_pos +=
-                                camera_front.cross(&camera_up) * camera_speed;
+                            cam.move_direction(CameraMovement::RIGHT)
                         }
                         Some(VirtualKeyCode::F) => {
                             pipeline.config.set_fill_mode()
@@ -197,13 +142,6 @@ fn main() -> Result<(), Box<Error>> {
                         }
                         Some(VirtualKeyCode::L) => {
                             pipeline.config.set_point_mode()
-                        }
-                        Some(VirtualKeyCode::R) => {
-                            rotate_direction = if rotate_direction == -1 {
-                                1
-                            } else {
-                                -1
-                            }
                         }
                         Some(VirtualKeyCode::Escape) => running = false,
                         _ => (),
@@ -215,9 +153,7 @@ fn main() -> Result<(), Box<Error>> {
             }
         });
 
-        let eye = Point3::from_coordinates(camera_pos);
-        let target = Point3::from_coordinates(camera_pos + camera_front);
-        let view = Matrix4::look_at_rh(&eye, &target, &camera_up);
+        let view = cam.get_view();
 
         unsafe {
             gl::ClearColor(1., 1., 1., 1.);
@@ -226,9 +162,9 @@ fn main() -> Result<(), Box<Error>> {
             for (i, position) in cube_positions.iter().enumerate() {
                 let angle = 20. * i as f32;
                 let rotation = Vector3::new(
-                    current_frame * f32::from(rotate_direction),
-                    -current_frame * f32::from(rotate_direction),
-                    angle - current_frame * f32::from(rotate_direction),
+                    current_frame,
+                    -current_frame,
+                    angle - current_frame,
                 );
 
                 let model =
