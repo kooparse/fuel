@@ -1,7 +1,6 @@
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
-extern crate cgmath;
 extern crate gl;
 extern crate glutin;
 extern crate image;
@@ -123,16 +122,16 @@ fn main() -> Result<(), Box<Error>> {
                         ..
                     } => match virtual_keycode {
                         Some(VirtualKeyCode::W) => {
-                            cam.move_direction(CameraMovement::FORWARD)
+                            cam.move_direction(&CameraMovement::FORWARD)
                         }
                         Some(VirtualKeyCode::S) => {
-                            cam.move_direction(CameraMovement::BACKWARD)
+                            cam.move_direction(&CameraMovement::BACKWARD)
                         }
                         Some(VirtualKeyCode::A) => {
-                            cam.move_direction(CameraMovement::LEFT)
+                            cam.move_direction(&CameraMovement::LEFT)
                         }
                         Some(VirtualKeyCode::D) => {
-                            cam.move_direction(CameraMovement::RIGHT)
+                            cam.move_direction(&CameraMovement::RIGHT)
                         }
                         Some(VirtualKeyCode::F) => {
                             pipeline.config.set_fill_mode()

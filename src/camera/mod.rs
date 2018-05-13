@@ -80,7 +80,7 @@ impl FirstPerson {
         ).normalize();
     }
     // Moving camera on the coords in 3d space
-    pub fn move_direction(&mut self, direction: CameraMovement) {
+    pub fn move_direction(&mut self, direction: &CameraMovement) {
         let speed = self.get_dt_speed();
         match direction {
             CameraMovement::FORWARD => self.position += speed * self.front,
