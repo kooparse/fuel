@@ -1,29 +1,23 @@
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
-extern crate gl;
-extern crate glutin;
-extern crate image;
-extern crate nalgebra as na;
+extern crate fuel;
 
-mod camera;
-mod renderer;
-mod utils;
-mod window;
+use fuel::FirstPerson;
+use fuel::Pipeline;
+use fuel::Window;
+use fuel::gl;
+use fuel::na::{Isometry3, Vector3};
+use fuel::utils;
 
-use na::{Isometry3, Vector3};
-use std::error::Error;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
-
-use renderer::Pipeline;
-use window::Window;
 
 const TITLE: &str = "Engine";
 const WINDOW_WIDTH: f32 = 800.;
 const WINDOW_HEIGHT: f32 = 600.;
 
-fn main() -> Result<(), Box<Error>> {
+fn main() {
     let now = Instant::now();
     let mut win = Window::new(TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
     let mut dt: f32;
@@ -34,7 +28,7 @@ fn main() -> Result<(), Box<Error>> {
     win.load_gl_methods();
 
     let mut cam =
-        camera::FirstPerson::new((WINDOW_WIDTH, WINDOW_HEIGHT), 45., 0.1, 100.);
+        FirstPerson::new((WINDOW_WIDTH, WINDOW_HEIGHT), 45., 0.1, 100.);
     let projection = cam.get_projection();
 
     win.gl_window
@@ -96,6 +90,4 @@ fn main() -> Result<(), Box<Error>> {
         win.clear_gl();
         sleep(Duration::from_millis(16));
     }
-
-    Ok(())
 }
