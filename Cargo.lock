@@ -299,6 +299,7 @@ dependencies = [
  "glutin 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "nalgebra 0.14.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "uuid 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -953,6 +954,14 @@ version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "uuid"
+version = "0.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "cfg-if 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "void"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1197,6 +1206,7 @@ dependencies = [
 "checksum unreachable 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "382810877fe448991dfc7f0dd6e3ae5d58088fd0ea5e35189655f84e6814fa56"
 "checksum url 1.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f808aadd8cfec6ef90e4a14eb46f24511824d1ac596b9682703c87056c8678b7"
 "checksum utf8-ranges 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "662fab6525a98beff2921d7f61a39e7d59e0b425ebc7d0d9e66d316e55124122"
+"checksum uuid 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)" = "8630752f979f1b6b87c49830a5e3784082545de63920d59fbaac252474319447"
 "checksum void 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "6a02e4885ed3bc0f2de90ea6dd45ebcbb66dacffe03547fadbb0eeae2770887d"
 "checksum wayland-client 0.12.5 (registry+https://github.com/rust-lang/crates.io-index)" = "2b90adf943117ee4930d7944fe103dcb6f36ba05421f46521cb5adbf6bf0fbc8"
 "checksum wayland-kbd 0.13.1 (registry+https://github.com/rust-lang/crates.io-index)" = "4fe0fb1c9917da9529d781659e456d84a693d74fe873d1658109758444616f76"

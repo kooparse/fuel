@@ -6,7 +6,7 @@ use glutin::{ElementState, MouseButton, VirtualKeyCode};
 
 use camera::CameraMovement;
 use camera::FirstPerson;
-use renderer::Pipeline;
+use scene::Scene;
 
 pub struct Control {
     pub is_running: bool,
@@ -25,7 +25,7 @@ impl Control {
         &mut self,
         e: glutin::Event,
         cam: &mut FirstPerson,
-        pipeline: &mut Pipeline,
+        scene: &mut Scene,
     ) {
         if let WindowEvent { event, .. } = e {
             match event {
@@ -63,9 +63,9 @@ impl Control {
                     Some(VirtualKeyCode::D) => {
                         cam.move_direction(&CameraMovement::RIGHT)
                     }
-                    Some(VirtualKeyCode::F) => pipeline.config.set_fill_mode(),
-                    Some(VirtualKeyCode::P) => pipeline.config.set_line_mode(),
-                    Some(VirtualKeyCode::L) => pipeline.config.set_point_mode(),
+                    Some(VirtualKeyCode::F) => scene.set_fill_mode(),
+                    Some(VirtualKeyCode::P) => scene.set_line_mode(),
+                    Some(VirtualKeyCode::L) => scene.set_point_mode(),
                     Some(VirtualKeyCode::Escape) => self.is_running = false,
                     _ => (),
                 },
