@@ -1,39 +1,24 @@
 extern crate fuel;
 
 use fuel::Window;
-use fuel::types::Position;
 use fuel::utils::Control;
 use fuel::utils::primitive;
-use fuel::utils::time;
-use fuel::{FirstPerson, Object, Scene};
+use fuel::{Object, Scene};
 use std::thread::sleep;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 const TITLE: &str = "Engine";
 const WINDOW_WIDTH: f32 = 800.;
 const WINDOW_HEIGHT: f32 = 600.;
 
 fn main() {
-    let now: Instant = Instant::now();
-
     let mut win = Window::new(TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
     let mut control = Control::new();
-    let mut scene = Scene::new();
-
-    let mut dt: f32;
-    let mut last_frame: f32 = 0.;
+    let mut scene = Scene::new(WINDOW_WIDTH, WINDOW_HEIGHT, 45., 0.1, 100.);
 
     win.make_current();
     win.load_gl_methods();
-
-    let mut cam =
-        FirstPerson::new((WINDOW_WIDTH, WINDOW_HEIGHT), 45., 0.1, 100.);
-    let projection = cam.get_projection();
-
-    win.gl_window
-        .window()
-        .set_cursor_position(cam.last_pos.0 as i32, cam.last_pos.1 as i32)
-        .expect("Failed to set cursor position at the center of the screen");
+    win.set_cursor_position(scene.camera.last_pos);
 
     let cube = Object::new(
         primitive::get_cube_vertices(),
@@ -41,32 +26,21 @@ fn main() {
         Some("container.jpg"),
     );
 
-    let positions = vec![
-        Position::new(0., 0., -2.),
-        Position::new(2., 0., -1.),
-        Position::new(-2., 0., -1.),
-    ];
-
-    for pos in positions {
-        let id = scene.add(cube.clone());
-        scene.position(id, pos);
-    }
+    let id = scene.add(cube);
+    scene.get_component(id).set_position(0., 0., 0.);
 
     while control.is_running {
         win.clear_gl();
-        let current_frame = time::duration_to_secs(now.elapsed()) as f32;
-        dt = current_frame - last_frame;
-        last_frame = current_frame;
+        win.compute_delta();
         // set delta time for each frame
-        cam.set_dt(dt);
+        scene.camera.set_dt(win.get_dt());
 
-        let view = cam.get_view();
         win.event_loop.poll_events(|e| {
-            control.process_inputs(e, &mut cam, &mut scene);
+            control.process_inputs(e, &mut scene);
         });
         // Render all components into the
         // current scene
-        scene.render(projection, view);
+        scene.render();
         sleep(Duration::from_millis(16));
     }
 }
