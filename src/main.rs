@@ -1,7 +1,6 @@
 extern crate fuel;
 
 use fuel::Window;
-use fuel::types::Position;
 use fuel::utils::Control;
 use fuel::utils::primitive;
 use fuel::utils::time;
@@ -41,16 +40,8 @@ fn main() {
         Some("container.jpg"),
     );
 
-    let positions = vec![
-        Position::new(0., 0., -2.),
-        Position::new(2., 0., -1.),
-        Position::new(-2., 0., -1.),
-    ];
-
-    for pos in positions {
-        let id = scene.add(cube.clone());
-        scene.position(id, pos);
-    }
+    let id = scene.add(cube);
+    scene.get_component(id).set_position(0., 0., 0.);
 
     while control.is_running {
         win.clear_gl();

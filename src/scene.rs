@@ -1,7 +1,6 @@
 use gl;
 use na::Matrix4;
 use renderer::component::Component;
-use renderer::types::Position;
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -34,14 +33,11 @@ impl Scene {
         key
     }
 
-    pub fn position(&mut self, key: Uuid, position: Position) {
-        if let Some(x) = self.objects.get_mut(&key) {
-            x.set_position(position.x, position.y, position.z);
-        }
-    }
-
-    pub fn get_component(&mut self, key: Uuid) -> Option<&Component> {
-        self.objects.get(&key).map(|x| &**x)
+    pub fn get_component(&mut self, key: Uuid) -> &mut Component {
+        self.objects
+            .get_mut(&key)
+            .map(|x| &mut **x)
+            .expect("Failed to retrieve component")
     }
 
     // Draw all component into the created scene
