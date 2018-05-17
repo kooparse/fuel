@@ -14,14 +14,23 @@ pub struct Shader {
     pub id: u32,
 }
 
+fn get_paths(shader_name: &str) -> (String, String) {
+    let vertex = format!("{}.vs", shader_name);
+    let fragment = format!("{}.fs", shader_name);
+
+    (vertex, fragment)
+}
+
 impl Shader {
-    pub fn new(vertex_path: &str, fragment_path: &str) -> Shader {
+    pub fn new(shader_name: &str) -> Shader {
         let mut shader = Shader { id: 0 };
 
+        let (vertex_path, fragment_path) = get_paths(shader_name);
+
         let vertex_shader =
-            shader.compile_shader(gl::VERTEX_SHADER, vertex_path);
+            shader.compile_shader(gl::VERTEX_SHADER, &vertex_path);
         let fragment_shader =
-            shader.compile_shader(gl::FRAGMENT_SHADER, fragment_path);
+            shader.compile_shader(gl::FRAGMENT_SHADER, &fragment_path);
 
         unsafe {
             let shader_program_id = gl::CreateProgram();

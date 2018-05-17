@@ -116,6 +116,7 @@ impl FirstPerson {
     pub fn get_view(&self) -> Matrix4<f32> {
         let eye = Point3::from_coordinates(self.position);
         let target = Point3::from_coordinates(self.position + self.front);
+
         Matrix4::look_at_rh(&eye, &target, &self.up)
     }
 

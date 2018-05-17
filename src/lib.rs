@@ -5,12 +5,17 @@ pub extern crate gl;
 pub extern crate glutin;
 pub extern crate image;
 pub extern crate nalgebra as na;
+extern crate uuid;
 
-pub use renderer::Pipeline;
-pub use window::Window;
 pub use camera::FirstPerson;
+pub use renderer::Light;
+pub use renderer::Object;
+pub use renderer::*;
+pub use scene::Scene;
+pub use window::Window;
 
-pub mod utils;
 mod camera;
 mod renderer;
+mod scene;
+pub mod utils;
 mod window;
