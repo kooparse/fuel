@@ -1,5 +1,5 @@
+use camera::FirstPerson;
 use gl;
-use na::Matrix4;
 use renderer::component::Component;
 use std::collections::HashMap;
 use uuid::Uuid;
@@ -7,11 +7,16 @@ use uuid::Uuid;
 #[derive(Default)]
 pub struct Scene {
     objects: HashMap<Uuid, Box<Component>>,
+    pub camera: FirstPerson,
 }
 
 impl Scene {
-    pub fn new() -> Self {
-        Default::default()
+    pub fn new(width: f32, height: f32, fov: f32, near: f32, far: f32) -> Self {
+        let camera = FirstPerson::new((width, height), fov, near, far);
+        Scene {
+            camera,
+            ..Default::default()
+        }
     }
 
     // Draw wireframe polygons
@@ -41,11 +46,14 @@ impl Scene {
     }
 
     // Draw all component into the created scene
-    pub fn render(&self, projection: Matrix4<f32>, view: Matrix4<f32>) {
+    pub fn render(&self) {
         unsafe {
             gl::ClearColor(1., 1., 1., 1.);
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
+
+        let projection = self.camera.get_projection();
+        let view = self.camera.get_view();
 
         for component in self.objects.values() {
             component.render(projection, view);

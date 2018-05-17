@@ -4,7 +4,7 @@ use fuel::Window;
 use fuel::utils::Control;
 use fuel::utils::primitive;
 use fuel::utils::time;
-use fuel::{FirstPerson, Object, Scene};
+use fuel::{Object, Scene};
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 
@@ -17,7 +17,7 @@ fn main() {
 
     let mut win = Window::new(TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
     let mut control = Control::new();
-    let mut scene = Scene::new();
+    let mut scene = Scene::new(WINDOW_WIDTH, WINDOW_HEIGHT, 45., 0.1, 100.);
 
     let mut dt: f32;
     let mut last_frame: f32 = 0.;
@@ -25,13 +25,10 @@ fn main() {
     win.make_current();
     win.load_gl_methods();
 
-    let mut cam =
-        FirstPerson::new((WINDOW_WIDTH, WINDOW_HEIGHT), 45., 0.1, 100.);
-    let projection = cam.get_projection();
-
+    let (last_pos_x, last_pos_y) = scene.camera.last_pos;
     win.gl_window
         .window()
-        .set_cursor_position(cam.last_pos.0 as i32, cam.last_pos.1 as i32)
+        .set_cursor_position(last_pos_x as i32, last_pos_y as i32)
         .expect("Failed to set cursor position at the center of the screen");
 
     let cube = Object::new(
@@ -49,15 +46,14 @@ fn main() {
         dt = current_frame - last_frame;
         last_frame = current_frame;
         // set delta time for each frame
-        cam.set_dt(dt);
+        scene.camera.set_dt(dt);
 
-        let view = cam.get_view();
         win.event_loop.poll_events(|e| {
-            control.process_inputs(e, &mut cam, &mut scene);
+            control.process_inputs(e, &mut scene);
         });
         // Render all components into the
         // current scene
-        scene.render(projection, view);
+        scene.render();
         sleep(Duration::from_millis(16));
     }
 }

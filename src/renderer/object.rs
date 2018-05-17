@@ -83,5 +83,4 @@ impl Component for Object {
             gl::DrawArrays(gl::TRIANGLES, 0, 36);
         }
     }
-    fn configuration(&self) {}
 }

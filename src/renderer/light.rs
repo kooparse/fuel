@@ -57,6 +57,4 @@ impl Component for Light {
         ComponentTypes::LIGHT
     }
     fn render(&self, _proj: Matrix4<f32>, _view: Matrix4<f32>) {}
-
-    fn configuration(&self) {}
 }
