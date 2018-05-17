@@ -14,8 +14,8 @@ fn main() {
   let mut scene = Scene::new();
   let cube = Object::new(vertices, "cube", "texture");
 
-  let key = scene.add(cube.clone());
-  scene.set_position(key, Position::new(0., 0., -3.));
+  let key = scene.add(cube);
+  scene.get_component(key).set_position(0., 0., 0.);
 
   scene.render();
 }
