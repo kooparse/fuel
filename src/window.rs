@@ -4,6 +4,8 @@ use glutin::Event::WindowEvent;
 use glutin::WindowEvent::KeyboardInput;
 use glutin::{ElementState, MouseCursor, VirtualKeyCode};
 use glutin::{EventsLoop, GlContext, GlWindow};
+use std::time::Instant;
+use utils::time;
 
 pub struct Window {
     // OpenGL context and a Window with which it is associated
@@ -12,6 +14,10 @@ pub struct Window {
     #[allow(dead_code)]
     is_running: bool,
     dimensions: (f32, f32),
+
+    started_time: Instant,
+    delta_time: f32,
+    last_frame_time: f32,
 }
 
 impl Window {
@@ -28,11 +34,35 @@ impl Window {
         gl_window.set_cursor(MouseCursor::NoneCursor);
 
         Window {
+            started_time: Instant::now(),
             gl_window,
             event_loop: window_loop,
             is_running: true,
             dimensions: (width, height),
+            delta_time: 0.,
+            last_frame_time: 0.,
         }
+    }
+
+    pub fn get_dt(&self) -> f32 {
+        self.delta_time
+    }
+
+    pub fn set_cursor_position(&self, position: (f32, f32)) {
+        let (last_pos_x, last_pos_y) = position;
+        self.gl_window
+            .window()
+            .set_cursor_position(last_pos_x as i32, last_pos_y as i32)
+            .expect(
+                "Failed to set cursor position at the center of the screen",
+            );
+    }
+
+    pub fn compute_delta(&mut self) {
+        let current_frame =
+            time::duration_to_secs(self.started_time.elapsed()) as f32;
+        self.delta_time = current_frame - self.last_frame_time;
+        self.last_frame_time = current_frame;
     }
 
     // Set current context for winit window
