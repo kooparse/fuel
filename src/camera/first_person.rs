@@ -1,4 +1,4 @@
-use camera::CameraMovement;
+use camera::{CameraMovement, Projection, View};
 use na::{Matrix4, Perspective3, Point3, Vector3};
 use std::default::Default;
 
@@ -107,14 +107,14 @@ impl FirstPerson {
         self.position = position
     }
 
-    pub fn get_view(&self) -> Matrix4<f32> {
+    pub fn get_view(&self) -> View {
         let eye = Point3::from_coordinates(self.position);
         let target = Point3::from_coordinates(self.position + self.front);
 
         Matrix4::look_at_rh(&eye, &target, &self.up)
     }
 
-    pub fn get_projection(&self) -> Matrix4<f32> {
+    pub fn get_projection(&self) -> Projection {
         Perspective3::new(
             self.get_aspect(),
             self.fovy,

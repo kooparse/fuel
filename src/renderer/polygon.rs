@@ -3,60 +3,67 @@ use gl;
 use gl::types::*;
 use na::{Isometry3, Vector3};
 use renderer::shader::Shader;
+use renderer::texture::Texture;
 use renderer::transform::Transform;
 use renderer::types::{Position, Rotation, VAO, VBO};
 use renderer::vertex::Vertex;
 use scene::{ObjectTypes, SceneObject};
 use std::mem;
-use utils::primitive;
 
-pub struct Light {
-    transform: Transform,
-    shader: Shader,
+#[derive(Debug, Clone)]
+pub struct Polygon {
+    pub transform: Transform,
+    pub shader: Shader,
+    pub texture: Option<Texture>,
     vertices: Vec<f32>,
-    vbo: VBO,
     vao: VAO,
+    vbo: VBO,
 }
 
-impl Default for Light {
-    fn default() -> Light {
-        Self::new()
-    }
-}
-
-impl Light {
-    pub fn new() -> Self {
+impl Polygon {
+    pub fn new(
+        vertices: Vec<f32>,
+        shader_name: &str,
+        texture_name: Option<&str>,
+    ) -> Polygon {
+        // TODO: Find a way to auto set stride
         let stride = 5 * mem::size_of::<GLfloat>() as GLsizei;
-        let shader = Shader::new("light");
-
-        let vertices = primitive::get_cube_vertices();
+        let shader = Shader::new(shader_name);
         let transform = Transform {
-            rotation: Rotation::new(0., -5., 0.),
+            rotation: Rotation::new(0., 5., 0.),
             ..Default::default()
         };
 
-        let mut light = Light {
+        let mut object = Polygon {
             transform,
             shader,
+            texture: None,
             vertices,
             vao: 0,
             vbo: 0,
         };
 
-        let (vbo, vao) = light.set_vertex(stride);
-        light.vbo = vbo;
-        light.vao = vao;
-        light
+        let (vbo, vao) = object.set_vertex(stride);
+
+        let texture = match texture_name {
+            Some(x) => Some(Texture::new(x, stride)),
+            None => None,
+        };
+
+        object.texture = texture;
+        object.vbo = vbo;
+        object.vao = vao;
+        object
     }
 }
 
-impl Vertex for Light {
+impl Vertex for Polygon {
     fn get_vertices(&self) -> Vec<f32> {
         self.vertices.clone()
     }
 }
 
-impl SceneObject for Light {
+impl SceneObject for Polygon {
     fn set_scale(&mut self, scale: f32) {
         self.transform.set_scale(scale);
     }
@@ -67,12 +74,12 @@ impl SceneObject for Light {
     }
 
     fn set_position(&mut self, x: f32, y: f32, z: f32) {
-        let pos = Position::new(x, y, z);
-        self.transform.set_position(pos);
+        self.transform
+            .set_position(Position::new(x, y, z));
     }
 
     fn get_type(&self) -> ObjectTypes {
-        ObjectTypes::LIGHT
+        ObjectTypes::POLYGON
     }
 
     fn render(&self, projection: Projection, view: View) {
@@ -82,6 +89,10 @@ impl SceneObject for Light {
 
         self.shader.use_program();
         self.shader.set_mvp(projection * view * model);
+
+        if let Some(mut texture) = self.texture.clone() {
+            texture.render();
+        }
 
         unsafe {
             gl::BindVertexArray(self.vao);

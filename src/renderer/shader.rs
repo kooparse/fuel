@@ -7,7 +7,7 @@ use std::str;
 
 use gl;
 use gl::types::*;
-use na::{Matrix4, Vector4};
+use na::{Matrix4, Vector3};
 
 #[derive(Clone, Debug)]
 pub struct Shader {
@@ -68,12 +68,9 @@ impl Shader {
         unsafe { gl::Uniform1f(shader_variable, value) }
     }
 
-    #[allow(dead_code)]
-    pub fn set_color(&self, var_name: &str, rgba: Vector4<f32>) {
+    pub fn set_color(&self, var_name: &str, rgb: Vector3<f32>) {
         let shader_variable = self.get_location(var_name);
-        unsafe {
-            gl::Uniform4f(shader_variable, rgba.x, rgba.y, rgba.z, rgba.w)
-        }
+        unsafe { gl::Uniform3f(shader_variable, rgb.x, rgb.y, rgb.z) }
     }
 
     pub fn set_mvp(&self, mvp: Matrix4<f32>) {

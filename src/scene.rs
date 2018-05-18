@@ -1,12 +1,30 @@
-use camera::FirstPerson;
+use camera::{FirstPerson, Projection, View};
 use gl;
-use renderer::component::Component;
+use na::Vector3;
 use std::collections::HashMap;
 use uuid::Uuid;
 
+// Enum of all type that an object
+// can have
+pub enum ObjectTypes {
+    POLYGON,
+    LIGHT,
+}
+
+// Object to put in the scene
+// Position in the spacial scene with render method
+// is needed
+pub trait SceneObject {
+    fn set_position(&mut self, f32, f32, f32);
+    fn get_type(&self) -> ObjectTypes;
+    fn render(&self, Projection, View);
+    fn set_color(&self, name: &str, Vector3<f32>);
+    fn set_scale(&mut self, scale: f32);
+}
+
 #[derive(Default)]
 pub struct Scene {
-    objects: HashMap<Uuid, Box<Component>>,
+    objects: HashMap<Uuid, Box<SceneObject>>,
     pub camera: FirstPerson,
 }
 
@@ -32,31 +50,31 @@ impl Scene {
         unsafe { gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL) }
     }
 
-    pub fn add(&mut self, element: impl Component + 'static) -> Uuid {
+    pub fn add(&mut self, element: impl SceneObject + 'static) -> Uuid {
         let key = Uuid::new_v4();
         self.objects.insert(key, Box::new(element));
         key
     }
 
-    pub fn get_component(&mut self, key: Uuid) -> &mut Component {
+    pub fn get_object(&mut self, key: Uuid) -> &mut SceneObject {
         self.objects
             .get_mut(&key)
             .map(|x| &mut **x)
-            .expect("Failed to retrieve component")
+            .expect("Failed to retrieve object")
     }
 
-    // Draw all component into the created scene
+    // Draw all object into the created scene
     pub fn render(&self) {
         unsafe {
-            gl::ClearColor(1., 1., 1., 1.);
+            gl::ClearColor(0., 0., 0., 0.);
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
 
         let projection = self.camera.get_projection();
         let view = self.camera.get_view();
 
-        for component in self.objects.values() {
-            component.render(projection, view);
+        for object in self.objects.values() {
+            object.render(projection, view);
         }
     }
 }

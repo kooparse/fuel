@@ -1,41 +1,44 @@
+use camera::{Projection, View};
 use gl;
 use gl::types::*;
-use na::{Isometry3, Matrix4};
-use renderer::component::{Component, ComponentTypes};
+use na::{Isometry3, Vector3};
 use renderer::shader::Shader;
 use renderer::texture::Texture;
+use renderer::transform::Transform;
 use renderer::types::{Position, Rotation, VAO, VBO};
-use renderer::vertex::VertexSetup;
+use renderer::vertex::Vertex;
+use scene::{ObjectTypes, SceneObject};
 use std::mem;
 
 #[derive(Debug, Clone)]
-pub struct Object {
-    vertices: Vec<f32>,
-    pub rotation: Rotation,
-    pub position: Position,
+pub struct Polygon {
+    pub transform: Transform,
     pub shader: Shader,
     pub texture: Option<Texture>,
+    vertices: Vec<f32>,
     vao: VAO,
     vbo: VBO,
 }
 
-impl Object {
+impl Polygon {
     pub fn new(
         vertices: Vec<f32>,
         shader_name: &str,
         texture_name: Option<&str>,
-    ) -> Object {
-        let shader = Shader::new(shader_name);
+    ) -> Polygon {
         // TODO: Find a way to auto set stride
         let stride = 5 * mem::size_of::<GLfloat>() as GLsizei;
-        shader.use_program();
-
-        let mut object = Object {
-            shader,
-            vertices,
-            texture: None,
+        let shader = Shader::new(shader_name);
+        let transform = Transform {
             rotation: Rotation::new(0., 5., 0.),
-            position: Position::new(0., 0., 0.),
+            ..Default::default()
+        };
+
+        let mut object = Polygon {
+            transform,
+            shader,
+            texture: None,
+            vertices,
             vao: 0,
             vbo: 0,
         };
@@ -54,24 +57,33 @@ impl Object {
     }
 }
 
-impl VertexSetup for Object {
+impl Vertex for Polygon {
     fn get_vertices(&self) -> Vec<f32> {
         self.vertices.clone()
     }
 }
 
-impl Component for Object {
+impl SceneObject for Polygon {
+    fn 
+    fn set_color(&self, name: &str, color: Vector3<f32>) {
+        self.shader.use_program();
+        self.shader.set_color(name, color);
+    }
+
     fn set_position(&mut self, x: f32, y: f32, z: f32) {
-        self.position = Position::new(x, y, z);
+        self.transform
+            .set_position(Position::new(x, y, z));
     }
 
-    fn get_type(&self) -> ComponentTypes {
-        ComponentTypes::OBJECT
+    fn get_type(&self) -> ObjectTypes {
+        ObjectTypes::POLYGON
     }
 
-    fn render(&self, projection: Matrix4<f32>, view: Matrix4<f32>) {
-        let model =
-            Isometry3::new(self.position, self.rotation).to_homogeneous();
+    fn render(&self, projection: Projection, view: View) {
+        let (position, rotation) = self.transform.get();
+        let model = Isometry3::new(position, rotation).to_homogeneous();
+
+        self.shader.use_program();
         self.shader.set_mvp(projection * view * model);
 
         if let Some(mut texture) = self.texture.clone() {

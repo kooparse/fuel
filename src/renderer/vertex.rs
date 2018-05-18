@@ -1,14 +1,15 @@
 use gl;
 use gl::types::*;
 
+use renderer::types::{VAO, VBO};
 use std::mem;
 use std::os::raw::c_void;
 use std::ptr;
 
-pub trait VertexSetup {
+pub trait Vertex {
     fn get_vertices(&self) -> Vec<f32>;
 
-    fn set_vertex(&self, stride: GLsizei) -> (u32, u32) {
+    fn set_vertex(&self, stride: GLsizei) -> (VBO, VAO) {
         let vertices = self.get_vertices();
         let (mut vao, mut vbo) = (0, 0);
 
