@@ -1,3 +1,4 @@
+use fuel_utils::time;
 use gl;
 use glutin;
 use glutin::Event::WindowEvent;
@@ -5,7 +6,6 @@ use glutin::WindowEvent::KeyboardInput;
 use glutin::{ElementState, MouseCursor, VirtualKeyCode};
 use glutin::{EventsLoop, GlContext, GlWindow};
 use std::time::Instant;
-use utils::time;
 
 pub struct Window {
     // OpenGL context and a Window with which it is associated

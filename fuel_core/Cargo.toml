@@ -1,0 +1,10 @@
+[package]
+name = "fuel_core"
+version = "0.1.0"
+authors = ["Alexandre Chêne <kooparse@protonmail.com>"]
+
+[dependencies]
+fuel_camera = { version = "*", path = "../fuel_camera" }
+gl = "0.6.0"
+nalgebra = "0.14.0"
+uuid = { version = "0.6", features = ["serde", "v4"] }

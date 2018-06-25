@@ -1,13 +1,13 @@
-use camera::{Projection, View};
+use fuel_camera::{Projection, View};
+use fuel_core::{ObjectTypes, SceneObject};
 use fuel_types::{Rotation, Transform, VAO, VBO};
+use fuel_utils::primitive;
 use gl;
 use gl::types::*;
 use na::{Isometry3, Vector3};
-use renderer::shader::Shader;
-use renderer::vertex::Vertex;
-use scene::{ObjectTypes, SceneObject};
+use shader::Shader;
 use std::mem;
-use utils::primitive;
+use vertex::Vertex;
 
 pub struct Light {
     transform: Transform,

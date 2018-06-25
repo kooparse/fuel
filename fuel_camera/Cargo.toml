@@ -1,0 +1,7 @@
+[package]
+name = "fuel_camera"
+version = "0.1.0"
+authors = ["Alexandre Chêne <kooparse@protonmail.com>"]
+
+[dependencies]
+nalgebra = "0.14.0"

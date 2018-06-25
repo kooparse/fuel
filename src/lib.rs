@@ -1,4 +1,8 @@
+pub extern crate fuel_camera;
+pub extern crate fuel_core;
+pub extern crate fuel_render;
 pub extern crate fuel_types;
+pub extern crate fuel_utils;
 pub extern crate gl;
 pub extern crate glutin;
 pub extern crate image;
@@ -6,15 +10,9 @@ pub extern crate nalgebra as na;
 
 extern crate uuid;
 
-pub use camera::FirstPerson;
-pub use renderer::Light;
-pub use renderer::Polygon;
-pub use renderer::*;
-pub use scene::{ObjectTypes, Scene};
+pub use fuel_camera::FirstPerson;
+pub use fuel_core::{ObjectTypes, Scene};
+pub use fuel_render::{Light, Polygon};
 pub use window::Window;
 
-mod camera;
-mod renderer;
-mod scene;
-pub mod utils;
 mod window;

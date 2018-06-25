@@ -1,3 +1,4 @@
+extern crate nalgebra as na;
 use na::Matrix4;
 
 mod first_person;

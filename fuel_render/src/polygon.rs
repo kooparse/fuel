@@ -1,12 +1,12 @@
-use camera::{Projection, View};
+use fuel_camera::{Projection, View};
 use fuel_types::{Rotation, Transform, VAO, VBO};
 use gl;
 use gl::types::*;
 use na::{Isometry3, Vector3};
-use renderer::shader::Shader;
-use renderer::texture::Texture;
-use renderer::vertex::Vertex;
-use scene::{ObjectTypes, SceneObject};
+use shader::Shader;
+use texture::Texture;
+use vertex::Vertex;
+use fuel_core::{ObjectTypes, SceneObject};
 use std::mem;
 
 #[derive(Debug, Clone)]

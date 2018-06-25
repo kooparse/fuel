@@ -1,8 +1,8 @@
 extern crate fuel;
 
+use fuel::fuel_utils::primitive;
+use fuel::fuel_utils::Control;
 use fuel::na::Vector3;
-use fuel::utils::primitive;
-use fuel::utils::Control;
 use fuel::Window;
 use fuel::{Light, Polygon, Scene};
 use std::thread::sleep;

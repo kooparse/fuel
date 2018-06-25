@@ -194,7 +194,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "fuel"
 version = "0.1.0"
 dependencies = [
+ "fuel_camera 0.1.0",
+ "fuel_core 0.1.0",
+ "fuel_render 0.1.0",
  "fuel_types 0.1.0",
+ "fuel_utils 0.1.0",
  "gl 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "glutin 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -203,10 +207,49 @@ dependencies = [
 ]
 
 [[package]]
+name = "fuel_camera"
+version = "0.1.0"
+dependencies = [
+ "nalgebra 0.14.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "fuel_core"
+version = "0.1.0"
+dependencies = [
+ "fuel_camera 0.1.0",
+ "gl 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nalgebra 0.14.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "uuid 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "fuel_render"
+version = "0.1.0"
+dependencies = [
+ "fuel_camera 0.1.0",
+ "fuel_core 0.1.0",
+ "fuel_types 0.1.0",
+ "fuel_utils 0.1.0",
+ "gl 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "image 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nalgebra 0.14.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "fuel_types"
 version = "0.1.0"
 dependencies = [
  "nalgebra 0.14.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "fuel_utils"
+version = "0.1.0"
+dependencies = [
+ "fuel_camera 0.1.0",
+ "fuel_core 0.1.0",
+ "glutin 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

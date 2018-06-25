@@ -5,8 +5,8 @@ use glutin::WindowEvent::{
 };
 use glutin::{ElementState, MouseButton, VirtualKeyCode};
 
-use camera::CameraMovement;
-use scene::Scene;
+use fuel_camera::CameraMovement;
+use fuel_core::Scene;
 
 #[derive(Default)]
 pub struct Control {

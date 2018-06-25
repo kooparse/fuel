@@ -1,4 +1,4 @@
-use camera::{FirstPerson, Projection, View};
+use fuel_camera::{FirstPerson, Projection, View};
 use gl;
 use na::Vector3;
 use std::collections::HashMap;
