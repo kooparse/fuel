@@ -4,7 +4,6 @@ version = "0.1.0"
 authors = ["Alexandre Chêne <kooparse@protonmail.com>"]
 
 [dependencies]
-clippy = { version = "0.0.198", optional = true }
 gl = "0.6.0"
 glutin = "0.15.0"
 nalgebra = "0.14.0"

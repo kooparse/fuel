@@ -1,6 +1,3 @@
-#![cfg_attr(feature = "clippy", feature(plugin))]
-#![cfg_attr(feature = "clippy", plugin(clippy))]
-
 pub extern crate fuel_types;
 pub extern crate gl;
 pub extern crate glutin;
