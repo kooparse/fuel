@@ -115,12 +115,8 @@ impl FirstPerson {
     }
 
     pub fn get_projection(&self) -> Projection {
-        Perspective3::new(
-            self.get_aspect(),
-            self.fovy,
-            self.znear,
-            self.zfar,
-        ).to_homogeneous()
+        Perspective3::new(self.get_aspect(), self.fovy, self.znear, self.zfar)
+            .to_homogeneous()
     }
 
     pub fn get_dt_speed(&self) -> f32 {

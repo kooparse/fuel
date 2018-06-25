@@ -1,11 +1,10 @@
 use camera::{Projection, View};
+use fuel_types::{Rotation, Transform, VAO, VBO};
 use gl;
 use gl::types::*;
 use na::{Isometry3, Vector3};
 use renderer::shader::Shader;
 use renderer::texture::Texture;
-use renderer::transform::Transform;
-use renderer::types::{Position, Rotation, VAO, VBO};
 use renderer::vertex::Vertex;
 use scene::{ObjectTypes, SceneObject};
 use std::mem;
@@ -30,7 +29,7 @@ impl Polygon {
         let stride = 5 * mem::size_of::<GLfloat>() as GLsizei;
         let shader = Shader::new(shader_name);
         let transform = Transform {
-            rotation: Rotation::new(0., 5., 0.),
+            rotation: Rotation::new_with_default(0., 5., 0.),
             ..Default::default()
         };
 
@@ -65,7 +64,7 @@ impl Vertex for Polygon {
 
 impl SceneObject for Polygon {
     fn set_scale(&mut self, scale: f32) {
-        self.transform.set_scale(scale);
+        self.transform.scale.set(scale);
     }
 
     fn set_color(&self, name: &str, color: Vector3<f32>) {
@@ -74,8 +73,7 @@ impl SceneObject for Polygon {
     }
 
     fn set_position(&mut self, x: f32, y: f32, z: f32) {
-        self.transform
-            .set_position(Position::new(x, y, z));
+        self.transform.position.set(x, y, z);
     }
 
     fn get_type(&self) -> ObjectTypes {
@@ -83,9 +81,9 @@ impl SceneObject for Polygon {
     }
 
     fn render(&self, projection: Projection, view: View) {
-        let (position, rotation) = self.transform.get();
+        let (position, rotation, scale) = self.transform.get();
         let mut model = Isometry3::new(position, rotation).to_homogeneous();
-        model = model.append_scaling(self.transform.get_scale());
+        model = model.append_scaling(scale);
 
         self.shader.use_program();
         self.shader.set_mvp(projection * view * model);

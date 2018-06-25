@@ -10,6 +10,7 @@ glutin = "0.15.0"
 nalgebra = "0.14.0"
 image = "0.19.0"
 uuid = { version = "0.6", features = ["serde", "v4"] }
+fuel_types = { version = "*", path = "fuel_types" }
 
 [[example]]
 name = "cube"

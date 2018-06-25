@@ -1,7 +1,8 @@
 use glutin;
 use glutin::Event::WindowEvent;
-use glutin::WindowEvent::{CloseRequested, CursorMoved, KeyboardInput,
-                          MouseInput};
+use glutin::WindowEvent::{
+    CloseRequested, CursorMoved, KeyboardInput, MouseInput,
+};
 use glutin::{ElementState, MouseButton, VirtualKeyCode};
 
 use camera::CameraMovement;
@@ -40,9 +41,7 @@ impl Control {
                     position: (pos_x, pos_y),
                     ..
                 } => if self.is_mouse_right_pressed {
-                    scene
-                        .camera
-                        .spin_direction(pos_x as f32, pos_y as f32);
+                    scene.camera.spin_direction(pos_x as f32, pos_y as f32);
                 },
                 KeyboardInput {
                     input:
@@ -53,18 +52,18 @@ impl Control {
                         },
                     ..
                 } => match virtual_keycode {
-                    Some(VirtualKeyCode::W) => scene
-                        .camera
-                        .move_direction(&CameraMovement::FORWARD),
-                    Some(VirtualKeyCode::S) => scene
-                        .camera
-                        .move_direction(&CameraMovement::BACKWARD),
-                    Some(VirtualKeyCode::A) => scene
-                        .camera
-                        .move_direction(&CameraMovement::LEFT),
-                    Some(VirtualKeyCode::D) => scene
-                        .camera
-                        .move_direction(&CameraMovement::RIGHT),
+                    Some(VirtualKeyCode::W) => {
+                        scene.camera.move_direction(&CameraMovement::FORWARD)
+                    }
+                    Some(VirtualKeyCode::S) => {
+                        scene.camera.move_direction(&CameraMovement::BACKWARD)
+                    }
+                    Some(VirtualKeyCode::A) => {
+                        scene.camera.move_direction(&CameraMovement::LEFT)
+                    }
+                    Some(VirtualKeyCode::D) => {
+                        scene.camera.move_direction(&CameraMovement::RIGHT)
+                    }
                     Some(VirtualKeyCode::F) => scene.set_fill_mode(),
                     Some(VirtualKeyCode::P) => scene.set_line_mode(),
                     Some(VirtualKeyCode::L) => scene.set_point_mode(),

@@ -3,12 +3,12 @@
 
 extern crate fuel;
 
-use fuel::FirstPerson;
-use fuel::Pipeline;
-use fuel::Window;
 use fuel::gl;
 use fuel::na::{Isometry3, Vector3};
 use fuel::utils;
+use fuel::FirstPerson;
+use fuel::Pipeline;
+use fuel::Window;
 
 use std::thread::sleep;
 use std::time::{Duration, Instant};
@@ -37,17 +37,11 @@ fn main() {
         .expect("Failed to set cursor position at the center of the screen");
 
     let cube_vertices = utils::get_cube_vertices();
-    let cube_positions: [Vector3<f32>; 2] = [
-        Vector3::new(0., 0., 0.),
-        Vector3::new(2., 0., -2.),
-    ];
+    let cube_positions: [Vector3<f32>; 2] =
+        [Vector3::new(0., 0., 0.), Vector3::new(2., 0., -2.)];
 
-    let mut pipeline = Pipeline::new(
-        &cube_vertices,
-        "cube.vs",
-        "cube.fs",
-        "container.jpg",
-    );
+    let mut pipeline =
+        Pipeline::new(&cube_vertices, "cube.vs", "cube.fs", "container.jpg");
     pipeline.set_texture_off();
     pipeline.shader.use_program();
 

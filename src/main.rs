@@ -1,9 +1,9 @@
 extern crate fuel;
 
-use fuel::Window;
 use fuel::na::Vector3;
-use fuel::utils::Control;
 use fuel::utils::primitive;
+use fuel::utils::Control;
+use fuel::Window;
 use fuel::{Light, Polygon, Scene};
 use std::thread::sleep;
 use std::time::Duration;
@@ -21,11 +21,7 @@ fn main() {
     win.load_gl_methods();
     win.set_cursor_position(scene.camera.last_pos);
 
-    let cube = Polygon::new(
-        primitive::get_cube_vertices(),
-        "cube_light",
-        None,
-    );
+    let cube = Polygon::new(primitive::get_cube_vertices(), "cube_light", None);
     let id = scene.add(cube);
     scene.get_object(id).set_position(0., 0., 0.);
     scene

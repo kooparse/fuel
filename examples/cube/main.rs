@@ -1,8 +1,8 @@
 extern crate fuel;
 
-use fuel::Window;
-use fuel::utils::Control;
 use fuel::utils::primitive;
+use fuel::utils::Control;
+use fuel::Window;
 use fuel::{Object, Scene};
 use std::thread::sleep;
 use std::time::Duration;
