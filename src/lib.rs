@@ -5,10 +5,8 @@ pub extern crate fuel_types;
 pub extern crate fuel_utils;
 pub extern crate gl;
 pub extern crate glutin;
-pub extern crate image;
 pub extern crate nalgebra as na;
 
-extern crate uuid;
 
 pub use fuel_camera::FirstPerson;
 pub use fuel_core::{ObjectTypes, Scene};

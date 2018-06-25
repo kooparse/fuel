@@ -21,7 +21,8 @@ fn main() {
     win.load_gl_methods();
     win.set_cursor_position(scene.camera.last_pos);
 
-    let cube = Polygon::new(primitive::get_cube_vertices(), "cube_light", None);
+    let cube_vertices = primitive::get_cube_vertices();
+    let cube = Polygon::new(cube_vertices, "cube_light", None);
     let id = scene.add(cube);
     scene.get_object(id).set_position(0., 0., 0.);
     scene
