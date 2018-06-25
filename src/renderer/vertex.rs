@@ -1,7 +1,7 @@
 use gl;
 use gl::types::*;
 
-use renderer::types::{VAO, VBO};
+use fuel_types::{VAO, VBO};
 use std::mem;
 use std::os::raw::c_void;
 use std::ptr;
