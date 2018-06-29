@@ -12,6 +12,7 @@ fuel_render = { version = "*", path = "fuel_render" }
 fuel_camera = { version = "*", path = "fuel_camera" }
 fuel_core = { version = "*", path = "fuel_core" }
 fuel_utils = { version = "*", path = "fuel_utils" }
+gltf = "0.11.0"
 
 [[example]]
 name = "cube"
