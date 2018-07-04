@@ -1,18 +1,18 @@
 extern crate fuel;
+extern crate gltf;
 
-use fuel::fuel_utils::primitive;
 use fuel::fuel_utils::Control;
-use fuel::na::Vector3;
 use fuel::Window;
-use fuel::{Light, Polygon, Scene};
+use fuel::{Model, Scene};
+use std::error::Error;
 use std::thread::sleep;
 use std::time::Duration;
 
-const TITLE: &str = "Engine";
+const TITLE: &str = "Fuel";
 const WINDOW_WIDTH: f32 = 800.;
 const WINDOW_HEIGHT: f32 = 600.;
 
-fn main() {
+fn main() -> Result<(), Box<Error>> {
     let mut win = Window::new(TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
     let mut control = Control::new();
     let mut scene = Scene::new(WINDOW_WIDTH, WINDOW_HEIGHT, 45., 0.1, 100.);
@@ -21,21 +21,10 @@ fn main() {
     win.load_gl_methods();
     win.set_cursor_position(scene.camera.last_pos);
 
-    let cube_vertices = primitive::get_cube_vertices();
-    let cube = Polygon::new(cube_vertices, "cube_light", None);
-    let id = scene.add(cube);
+    let cube_1 =
+        Model::from_gltf("src/assets/meshes/samples/textured/BoxTextured.gltf");
+    let id = scene.add(cube_1);
     scene.get_object(id).set_position(0., 0., 0.);
-    scene
-        .get_object(id)
-        .set_color("objectColor", Vector3::new(1., 0.5, 0.31));
-    scene
-        .get_object(id)
-        .set_color("lightColor", Vector3::new(1., 1., 1.));
-
-    let lamp = Light::new();
-    let id = scene.add(lamp);
-    scene.get_object(id).set_position(1., 1., -2.);
-    scene.get_object(id).set_scale(0.5);
 
     while control.is_running {
         win.clear_gl();
@@ -51,4 +40,6 @@ fn main() {
         scene.render();
         sleep(Duration::from_millis(16));
     }
+
+    Ok(())
 }

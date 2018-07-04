@@ -9,6 +9,7 @@ use uuid::Uuid;
 pub enum ObjectTypes {
     POLYGON,
     LIGHT,
+    MODEL,
 }
 
 // Object to put in the scene

@@ -1,6 +1,6 @@
-use {CameraMovement, Projection, View};
 use na::{Matrix4, Perspective3, Point3, Vector3};
 use std::default::Default;
+use {CameraMovement, Projection, View};
 
 pub struct FirstPerson {
     pub speed: f32,

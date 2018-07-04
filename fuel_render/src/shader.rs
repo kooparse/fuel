@@ -100,16 +100,17 @@ impl Shader {
     }
 
     unsafe fn check_shader_compile_error(&self, shader: GLuint) {
-        const CAPACITY: usize = 512;
+        const CAPACITY: usize = 1024;
         let mut success = i32::from(gl::FALSE);
         let mut info_log = Vec::with_capacity(CAPACITY);
         info_log.set_len(CAPACITY - 1);
 
         gl::GetShaderiv(shader, gl::COMPILE_STATUS, &mut success);
+
         if success != i32::from(gl::TRUE) {
             gl::GetShaderInfoLog(
                 shader,
-                512,
+                CAPACITY as i32,
                 ptr::null_mut(),
                 info_log.as_mut_ptr() as *mut GLchar,
             );

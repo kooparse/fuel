@@ -21,6 +21,7 @@ pub struct Texture {
 }
 
 impl Texture {
+    #[allow(dead_code)]
     pub fn new(texture_name: &str, stride: GLsizei) -> Texture {
         let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         path.push(TEXTURE_ASSET_FOLDER);
@@ -43,18 +44,22 @@ impl Texture {
         texture
     }
 
+    #[allow(dead_code)]
     pub fn set_texture(&mut self) {
         unsafe { self.setup() }
     }
 
+    #[allow(dead_code)]
     pub fn set_texture_off(&mut self) {
         self.is_texture_activated = false
     }
 
+    #[allow(dead_code)]
     pub fn set_texture_true(&mut self) {
         self.is_texture_activated = true
     }
 
+    #[allow(dead_code)]
     // Draw our stuff
     pub fn render(&mut self) {
         let mut texture_id: u32 = 0;

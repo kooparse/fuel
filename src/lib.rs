@@ -7,10 +7,9 @@ pub extern crate gl;
 pub extern crate glutin;
 pub extern crate nalgebra as na;
 
-
 pub use fuel_camera::FirstPerson;
 pub use fuel_core::{ObjectTypes, Scene};
-pub use fuel_render::{Light, Polygon};
+pub use fuel_render::Model;
 pub use window::Window;
 
 mod window;
