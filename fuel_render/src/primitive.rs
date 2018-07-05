@@ -156,17 +156,17 @@ impl Primitive {
         // );
 
         // // Tex_coord_0
+        gl::EnableVertexAttribArray(1);
+        gl::VertexAttribPointer(
+            1,
+            2,
+            gl::FLOAT,
+            gl::FALSE,
+            size,
+            offset_of!(Vertex, tex_coord_0) as *const c_void,
+        );
+        // // Tex_coord_1
         // gl::EnableVertexAttribArray(2);
-        // gl::VertexAttribPointer(
-        //     1,
-        //     2,
-        //     gl::FLOAT,
-        //     gl::FALSE,
-        //     size,
-        //     offset_of!(Vertex, tex_coord_0) as *const c_void,
-        // );
-        // // // Tex_coord_1
-        // gl::EnableVertexAttribArray(3);
         // gl::VertexAttribPointer(
         //     2,
         //     2,

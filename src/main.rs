@@ -2,8 +2,9 @@ extern crate fuel;
 extern crate gltf;
 
 use fuel::fuel_utils::Control;
+use fuel::Importer;
+use fuel::Scene;
 use fuel::Window;
-use fuel::{Model, Scene};
 use std::error::Error;
 use std::thread::sleep;
 use std::time::Duration;
@@ -21,8 +22,9 @@ fn main() -> Result<(), Box<Error>> {
     win.load_gl_methods();
     win.set_cursor_position(scene.camera.last_pos);
 
-    let cube_1 =
-        Model::from_gltf("src/assets/meshes/samples/textured/BoxTextured.gltf");
+    let cube_1 = Importer::from_gltf(
+        "src/assets/meshes/samples/textured/BoxTextured.gltf",
+    );
     let id = scene.add(cube_1);
     scene.get_object(id).set_position(0., 0., 0.);
 

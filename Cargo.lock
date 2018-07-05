@@ -220,6 +220,7 @@ version = "0.1.0"
 dependencies = [
  "fuel_camera 0.1.0",
  "fuel_core 0.1.0",
+ "fuel_importer 0.1.0",
  "fuel_render 0.1.0",
  "fuel_types 0.1.0",
  "fuel_utils 0.1.0",
@@ -244,6 +245,16 @@ dependencies = [
  "gl 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "nalgebra 0.14.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "uuid 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "fuel_importer"
+version = "0.1.0"
+dependencies = [
+ "fuel_render 0.1.0",
+ "fuel_types 0.1.0",
+ "gltf 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nalgebra 0.14.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

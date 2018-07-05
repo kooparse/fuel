@@ -1,0 +1,10 @@
+[package]
+name = "fuel_importer"
+version = "0.1.0"
+authors = ["Alexandre Chêne <kooparse@protonmail.com>"]
+
+[dependencies]
+fuel_render = { version = "*", path = "../fuel_render" }
+fuel_types = { version = "*", path = "../fuel_types" }
+nalgebra = "0.14.0"
+gltf = "0.11"

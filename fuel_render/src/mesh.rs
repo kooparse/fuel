@@ -1,10 +1,10 @@
 use fuel_camera::{Projection, View};
 use fuel_core::{ObjectTypes, SceneObject};
 use fuel_types::Transform;
-use gltf;
-use na::{Vector2, Vector3};
+use na::Vector3;
 use primitive::Primitive;
-use vertex::Vertex;
+
+pub type Meshes = Vec<Mesh>;
 
 /// Model contains a list of Mesh that contains
 /// a list of Primitive that contains a list of Vertex.
@@ -17,7 +17,7 @@ use vertex::Vertex;
 /// inside the primitives.
 pub struct Model {
     transform: Transform,
-    meshes: Vec<Mesh>,
+    meshes: Meshes,
 }
 
 impl SceneObject for Model {
@@ -40,19 +40,8 @@ impl SceneObject for Model {
 }
 
 impl Model {
-    pub fn from_gltf(file_path: &str) -> Self {
-        let (doc, buffers, _) =
-            gltf::import(file_path).expect("Path for glTF file not valid.");
-
-        let meshes = doc.meshes()
-            .enumerate()
-            .map(|(_, mesh)| Mesh::from_gltf(mesh, &buffers))
-            .collect();
-
-        let transform = Transform {
-            ..Default::default()
-        };
-        Model { meshes, transform }
+    pub fn new(transform: Transform, meshes: Meshes) -> Self {
+        Self { transform, meshes }
     }
 }
 
@@ -61,68 +50,9 @@ pub struct Mesh {
 }
 
 impl Mesh {
-    pub fn from_gltf(
-        mesh: gltf::Mesh,
-        buffers: &Vec<gltf::buffer::Data>,
-    ) -> Self {
-        let primitives: Vec<Primitive> = mesh.primitives()
-            .enumerate()
-            .map(|(_, prim)| {
-                let reader =
-                    prim.reader(|buffer| Some(&buffers[buffer.index()]));
-
-                let mut vertices: Vec<Vertex> = reader
-                    .read_positions()
-                    .map(|positions| {
-                        positions
-                            .map(|position| Vertex {
-                                position: Vector3::from(position),
-                                normal: Vector3::from([1., 1., 1.]),
-                                ..Default::default()
-                            })
-                            .collect()
-                    })
-                    .unwrap_or(vec![]);
-
-                [0; 1].into_iter().enumerate().for_each(|(tex_index, _)| {
-                    reader
-                        .read_tex_coords(tex_index as u32)
-                        .map(|tex_coords| tex_coords.into_f32().enumerate())
-                        .map(|tex_coords| {
-                            tex_coords.for_each(|(i, coord)| match tex_index {
-                                0 => {
-                                    vertices[i].tex_coord_0 =
-                                        Vector2::from(coord)
-                                }
-                                1 => {
-                                    vertices[i].tex_coord_1 =
-                                        Vector2::from(coord)
-                                }
-                                _ => println!("No tex_coord > 1 is permitted."),
-                            })
-                        });
-                });
-
-                // reader.read_normals().iter().enumerate().for_each(
-                //     |(i, normal)| {
-                //         let normlals = normal.enumerate().for_each(|(_, n)| {
-                //             println!("{:?}", n);
-                //             vertices[i].normal = Vector3::from(n);
-                //         });
-                //     },
-                // );
-
-                let indices: Option<Vec<u32>> = reader
-                    .read_indices()
-                    .map(|indices| indices.into_u32().collect());
-
-                Primitive::new(&vertices, indices)
-            })
-            .collect();
-
-        Mesh { primitives }
+    pub fn new(primitives: Vec<Primitive>) -> Self {
+        Self { primitives }
     }
-
     fn draw(&self, proj: Projection, view: View, transform: &Transform) {
         self.primitives.iter().for_each(|primitive| {
             primitive.shader_config(proj, view, transform);

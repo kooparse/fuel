@@ -13,7 +13,8 @@ mod shader;
 mod texture;
 pub mod vertex;
 
-pub use self::mesh::Mesh;
+pub use self::texture::Texture;
+pub use self::mesh::{Meshes, Mesh};
 pub use self::mesh::Model;
 pub use self::primitive::Primitive;
 pub use self::vertex::Vertex;
