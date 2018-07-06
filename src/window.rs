@@ -89,35 +89,4 @@ impl Window {
             self.gl_window.get_proc_address(symbol) as *const _
         })
     }
-
-    // TODO: Be able to call pressed key like that
-    // win.on_pressed_key(VirtualKeyCode::W, || {
-    //     cam.move_direction(&CameraMovement::FORWARD)
-    // });
-    #[allow(dead_code)]
-    pub fn on_pressed_key(
-        &mut self,
-        keycode: VirtualKeyCode,
-        mut f: impl FnMut(),
-    ) {
-        self.event_loop.poll_events(|e| {
-            if let WindowEvent { event, .. } = e {
-                if let KeyboardInput {
-                    input:
-                        glutin::KeyboardInput {
-                            state: ElementState::Pressed,
-                            virtual_keycode,
-                            ..
-                        },
-                    ..
-                } = event
-                {
-                    // TODO: Remove unwrap
-                    if virtual_keycode.unwrap() == keycode {
-                        f()
-                    }
-                }
-            }
-        })
-    }
 }

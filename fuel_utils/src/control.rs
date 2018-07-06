@@ -26,6 +26,10 @@ impl Control {
         self.is_running = false;
     }
 
+    // TODO: Be able to call pressed key like that
+    // win.on_pressed_key(VirtualKeyCode::W, || {
+    //     cam.move_direction(&CameraMovement::FORWARD)
+    // });
     pub fn process_inputs(&mut self, e: glutin::Event, scene: &mut Scene) {
         // let mut cam = scene.camera;
         if let WindowEvent { event, .. } = e {
