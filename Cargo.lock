@@ -223,7 +223,7 @@ dependencies = [
  "fuel_importer 0.1.0",
  "fuel_render 0.1.0",
  "fuel_types 0.1.0",
- "fuel_utils 0.1.0",
+ "fuel_window 0.1.0",
  "gl 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "gltf 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "glutin 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -264,7 +264,6 @@ dependencies = [
  "fuel_camera 0.1.0",
  "fuel_core 0.1.0",
  "fuel_types 0.1.0",
- "fuel_utils 0.1.0",
  "gl 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "gltf 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -279,11 +278,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "fuel_utils"
+name = "fuel_window"
 version = "0.1.0"
 dependencies = [
- "fuel_camera 0.1.0",
- "fuel_core 0.1.0",
+ "gl 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "glutin 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

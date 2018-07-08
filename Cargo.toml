@@ -11,8 +11,8 @@ fuel_types = { version = "*", path = "fuel_types" }
 fuel_render = { version = "*", path = "fuel_render" }
 fuel_camera = { version = "*", path = "fuel_camera" }
 fuel_core = { version = "*", path = "fuel_core" }
-fuel_utils = { version = "*", path = "fuel_utils" }
 fuel_importer = { version = "*", path = "fuel_importer" }
+fuel_window = { version = "*", path = "fuel_window" }
 gltf = "0.11.0"
 
 [[example]]

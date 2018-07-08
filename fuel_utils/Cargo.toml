@@ -1,9 +1,0 @@
-[package]
-name = "fuel_utils"
-version = "0.1.0"
-authors = ["Alexandre Chêne <kooparse@protonmail.com>"]
-
-[dependencies]
-glutin = "0.15.0"
-fuel_core = { version = "*", path = "../fuel_core" }
-fuel_camera = { version = "*", path = "../fuel_camera" }
