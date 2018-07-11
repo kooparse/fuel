@@ -22,7 +22,7 @@ fn main() -> Result<(), Box<Error>> {
 
     win.make_current();
     win.load_gl_methods();
-    win.set_cursor_position(scene.camera.last_pos);
+    // win.set_cursor_position(scene.camera.last_pos);
 
     let cube_1 = Importer::from_gltf(
         "src/assets/meshes/samples/textured/BoxTextured.gltf",

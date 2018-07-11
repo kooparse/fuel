@@ -120,11 +120,9 @@ impl Window {
         keycode: VirtualKeyCode,
         mut cb: impl FnMut(),
     ) {
-        control.keycode_pressed.map(|code| {
-            if Some(code) == Some(keycode) {
-                cb();
-            }
-        });
+        if control.keycode_pressed.contains_key(&Some(keycode)) {
+            cb();
+        }
     }
 
     pub fn pull_events(&mut self, control: &mut Control) {
@@ -155,9 +153,13 @@ impl Window {
                         ..
                     } => match state {
                         ElementState::Pressed => {
-                            control.keycode_pressed = virtual_keycode
+                            control
+                                .keycode_pressed
+                                .insert(virtual_keycode, state);
                         }
-                        _ => control.keycode_pressed = None,
+                        ElementState::Released => {
+                            control.keycode_pressed.remove(&virtual_keycode);
+                        }
                     },
                     CloseRequested => control.stop(),
                     Resized(w, h) => control.window_resized = Some((w, h)),
